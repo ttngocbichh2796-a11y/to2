@@ -1,0 +1,2201 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Tạp Chí Điện Tử - Ấn Phẩm Thanh Xuân</title>
+
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+
+  <!-- Google Fonts hỗ trợ tiếng Việt: Playfair Display (Serif), Inter (Sans-serif), Dancing Script (Chữ viết tay nghệ thuật) -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@600;700&family=Inter:wght@300;400;500;600;700&family=Playfair+Display:ital,wght@0,600;0,700;0,800;1,400;1,600&display=swap" rel="stylesheet">
+
+  <!-- FontAwesome Icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
+
+  <!-- Supabase JS Client v2 -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            creamLight: '#FFFDF7',
+            cream: '#FFF8E9',
+            burgundy: '#681C27',
+            pastelBlue: '#B9D6E9',
+            pastelBlueBright: '#9ECAE8',
+            beige: '#E7D5C3',
+            ink: '#2A1E20',
+          },
+          fontFamily: {
+            serif: ['"Playfair Display"', 'Georgia', 'serif'],
+            sans: ['"Inter"', 'system-ui', 'sans-serif'],
+            script: ['"Dancing Script"', 'cursive'],
+          }
+        }
+      }
+    }
+  </script>
+
+  <style>
+    :root {
+      --cream-light: #FFFDF7;
+      --cream: #FFF8E9;
+      --burgundy: #681C27;
+      --pastel-blue: #B9D6E9;
+      --pastel-blue-bright: #9ECAE8;
+      --beige: #E7D5C3;
+      --ink: #2A1E20;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      background-color: var(--cream);
+      color: var(--ink);
+      font-family: 'Inter', sans-serif;
+      overflow-x: hidden;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    /* Họa tiết sọc xanh pastel và kem tươi sáng */
+    .pattern-stripes {
+      background-color: var(--cream-light);
+      background-image: repeating-linear-gradient(
+        90deg,
+        #FFFDF7 0px,
+        #FFFDF7 22px,
+        rgba(185, 214, 233, 0.34) 22px,
+        rgba(185, 214, 233, 0.34) 44px
+      );
+    }
+
+    /* Họa tiết caro nhỏ (Gingham) tươi tắn */
+    .pattern-gingham {
+      background-color: #FFFDF7;
+      background-image:
+        linear-gradient(90deg, rgba(185, 214, 233, 0.32) 50%, transparent 50%),
+        linear-gradient(rgba(185, 214, 233, 0.32) 50%, transparent 50%);
+      background-size: 22px 22px;
+    }
+
+    /* Họa tiết chấm bi pastel nhẹ nhàng */
+    .pattern-dots {
+      background-color: var(--cream);
+      background-image: radial-gradient(rgba(104, 28, 39, 0.14) 1.25px, transparent 1.25px);
+      background-size: 18px 18px;
+    }
+
+    /* Nhãn dán Sticker kiểu tạp chí có viền trắng nổi bật */
+    .editorial-sticker {
+      background-color: var(--pastel-blue);
+      color: var(--burgundy);
+      border: 2.5px solid #FFFFFF;
+      box-shadow: 0 4px 12px rgba(104, 28, 39, 0.16), 0 0 0 1.5px var(--burgundy);
+      transform: rotate(-4deg);
+      transition: transform 0.3s ease;
+    }
+    .editorial-sticker:hover {
+      transform: rotate(0deg) scale(1.04);
+    }
+
+    .editorial-sticker-burgundy {
+      background-color: var(--burgundy);
+      color: #FFFDF7;
+      border: 2.5px solid #FFFFFF;
+      box-shadow: 0 4px 12px rgba(104, 28, 39, 0.2), 0 0 0 1.5px var(--burgundy);
+      transform: rotate(3deg);
+    }
+
+    /* Khung ảnh viền chỉ mảnh & bóng cứng nhẹ phong cách ảnh mẫu */
+    .editorial-photo-frame {
+      border: 2px solid var(--burgundy);
+      box-shadow: 6px 6px 0px var(--pastel-blue);
+      background-color: #FFFDF7;
+      transition: transform 0.35s cubic-bezier(0.22, 1, 0.36, 1), box-shadow 0.35s ease;
+    }
+    .group:hover .editorial-photo-frame {
+      transform: translate(-2px, -3px);
+      box-shadow: 9px 9px 0px var(--pastel-blue-bright);
+    }
+
+    /* Hiệu ứng chuyển trang trượt ngang */
+    .page-view {
+      display: none;
+      opacity: 0;
+      transform: translateX(26px);
+      transition: opacity 0.4s cubic-bezier(0.22, 1, 0.36, 1), transform 0.4s cubic-bezier(0.22, 1, 0.36, 1);
+    }
+    .page-view.active {
+      display: block;
+    }
+    .page-view.visible {
+      opacity: 1;
+      transform: translateX(0);
+    }
+
+    /* Hiệu ứng xuất hiện khi cuộn */
+    .reveal-on-scroll {
+      opacity: 0;
+      transform: translateY(18px);
+      transition: opacity 0.55s ease-out, transform 0.55s ease-out;
+    }
+    .reveal-on-scroll.revealed {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    /* Phóng nhẹ ảnh khi hover */
+    .img-zoom {
+      transition: transform 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+    .group:hover .img-zoom {
+      transform: scale(1.06);
+    }
+
+    /* Bố cục 11 thành viên trên trang chủ: 4 + 4 + 3 (hàng cuối căn giữa) */
+    @media (min-width: 1024px) {
+      .home-grid-11 {
+        display: grid;
+        grid-template-columns: repeat(8, minmax(0, 1fr));
+        gap: 1.75rem;
+        align-items: start;
+      }
+      .home-grid-11 > .member-slot:nth-child(-n+8) {
+        grid-column: span 2 / span 2;
+      }
+      .home-grid-11 > .member-slot:nth-child(9) {
+        grid-column: 2 / span 2;
+      }
+      .home-grid-11 > .member-slot:nth-child(10) {
+        grid-column: 4 / span 2;
+      }
+      .home-grid-11 > .member-slot:nth-child(11) {
+        grid-column: 6 / span 2;
+      }
+      .home-grid-11 > .member-slot:nth-child(n+12) {
+        grid-column: span 2 / span 2;
+      }
+    }
+
+    /* Chống chuột phải & kéo thả ảnh thông thường */
+    .protected-photo {
+      user-select: none;
+      -webkit-user-select: none;
+      -webkit-touch-callout: none;
+    }
+
+    ::-webkit-scrollbar {
+      width: 8px;
+      height: 8px;
+    }
+    ::-webkit-scrollbar-track {
+      background: #FFFDF7;
+    }
+    ::-webkit-scrollbar-thumb {
+      background: #B9D6E9;
+      border-radius: 9999px;
+    }
+    ::-webkit-scrollbar-thumb:hover {
+      background: #681C27;
+    }
+  </style>
+</head>
+<body class="min-h-screen flex flex-col selection:bg-burgundy selection:text-creamLight">
+
+  <!-- THANH THÔNG BÁO CHẾ ĐỘ XEM TRƯỚC (PREVIEW BANNER) -->
+  <div id="preview-banner" class="hidden sticky top-0 z-[60] bg-burgundy text-creamLight px-4 py-2.5 shadow-md border-b-2 border-pastelBlue">
+    <div class="max-w-6xl mx-auto flex flex-wrap items-center justify-between gap-3">
+      <div class="flex items-center gap-2.5 text-xs sm:text-sm">
+        <span class="inline-flex items-center justify-center w-6 h-6 rounded-full bg-pastelBlue text-burgundy font-bold">
+          <i class="fa-solid fa-eye"></i>
+        </span>
+        <span><strong>CHẾ ĐỘ XEM TRƯỚC (PREVIEW):</strong> Bạn đang kiểm tra giao diện trước khi xuất bản chính thức.</span>
+      </div>
+      <div class="flex items-center gap-2">
+        <button onclick="exitPreviewToAdmin()" class="px-3.5 py-1.5 rounded-full bg-pastelBlue text-burgundy text-xs font-bold hover:bg-white transition cursor-pointer">
+          <i class="fa-solid fa-pen-to-square mr-1"></i> Quay lại chỉnh sửa
+        </button>
+        <button onclick="commitPreviewChanges()" class="px-4 py-1.5 rounded-full bg-creamLight text-burgundy text-xs font-bold hover:bg-beige transition cursor-pointer shadow-xs">
+          <i class="fa-solid fa-check mr-1"></i> LƯU CÔNG KHAI
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- HEADER & THANH ĐIỀU HƯỚNG -->
+  <header class="sticky top-0 z-50 bg-creamLight/95 backdrop-blur-md border-b border-beige">
+    <div class="h-2 w-full pattern-stripes border-b border-beige/70"></div>
+    <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="flex items-center justify-between h-20">
+        <!-- Logo Tạp Chí -->
+        <button onclick="navigateTo('home')" class="flex items-center gap-3 text-left group focus:outline-none cursor-pointer">
+          <div class="w-10 h-10 rounded-2xl bg-pastelBlue/60 border border-burgundy/30 flex items-center justify-center text-burgundy shadow-xs group-hover:rotate-6 transition">
+            <!-- Biểu tượng hoa thị 8 cánh retro -->
+            <svg class="w-5 h-5" viewBox="0 0 24 24" fill="currentColor">
+              <path d="M12 1L13.8 8.8L20.5 4.5L16.2 11.2L24 13L16.2 14.8L20.5 21.5L13.8 17.2L12 25L10.2 17.2L3.5 21.5L7.8 14.8L0 13L7.8 11.2L3.5 4.5L10.2 8.8L12 1Z"/>
+            </svg>
+          </div>
+          <div>
+            <div class="text-[10px] uppercase tracking-[0.26em] text-burgundy/75 font-semibold">Digital Editorial</div>
+            <div id="header-group-name" class="font-serif text-xl sm:text-2xl font-extrabold text-burgundy tracking-tight">
+              CHƯƠNG MƯỜI MỘT
+            </div>
+          </div>
+        </button>
+
+        <!-- Thanh điều hướng chính (4 mục chuẩn tiếng Việt) -->
+        <nav class="hidden md:flex items-center gap-2">
+          <button onclick="navigateTo('home')" data-nav="home" class="nav-btn px-4 py-2 rounded-full text-xs font-bold tracking-[0.14em] uppercase bg-pastelBlue/65 text-burgundy border border-burgundy/25 transition cursor-pointer">
+            TRANG CHỦ
+          </button>
+          <button onclick="navigateTo('about')" data-nav="about" class="nav-btn px-4 py-2 rounded-full text-xs font-bold tracking-[0.14em] uppercase text-ink/75 hover:bg-pastelBlue/35 hover:text-burgundy border border-transparent transition cursor-pointer">
+            GIỚI THIỆU
+          </button>
+          <button onclick="navigateTo('members')" data-nav="members" class="nav-btn px-4 py-2 rounded-full text-xs font-bold tracking-[0.14em] uppercase text-ink/75 hover:bg-pastelBlue/35 hover:text-burgundy border border-transparent transition cursor-pointer">
+            THÀNH VIÊN
+          </button>
+          <button onclick="navigateTo('contact')" data-nav="contact" class="nav-btn px-4 py-2 rounded-full text-xs font-bold tracking-[0.14em] uppercase text-ink/75 hover:bg-pastelBlue/35 hover:text-burgundy border border-transparent transition cursor-pointer">
+            LIÊN HỆ
+          </button>
+        </nav>
+
+        <!-- Nút Quản trị & Mobile Menu -->
+        <div class="flex items-center gap-2">
+          <button onclick="navigateTo('admin')" data-nav="admin" class="nav-btn inline-flex items-center gap-1.5 px-4 py-2 rounded-full bg-burgundy text-creamLight text-xs font-bold tracking-wider uppercase hover:opacity-90 transition cursor-pointer shadow-xs">
+            <i class="fa-solid fa-wand-magic-sparkles text-[11px] text-pastelBlue"></i>
+            <span class="hidden sm:inline">QUẢN TRỊ</span>
+          </button>
+
+          <button onclick="toggleMobileMenu()" aria-label="Mở menu" class="md:hidden w-10 h-10 rounded-full bg-pastelBlue/45 border border-burgundy/25 flex items-center justify-center text-burgundy cursor-pointer">
+            <i class="fa-solid fa-bars"></i>
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Mobile Menu Dropdown -->
+    <div id="mobile-menu" class="hidden md:hidden bg-creamLight border-t border-beige px-4 py-4 space-y-2 shadow-lg">
+      <button onclick="navigateTo('home'); toggleMobileMenu()" data-nav="home" class="mobile-nav-btn block w-full text-left px-4 py-3 rounded-2xl text-xs font-bold tracking-[0.15em] uppercase bg-pastelBlue/55 text-burgundy">
+        TRANG CHỦ
+      </button>
+      <button onclick="navigateTo('about'); toggleMobileMenu()" data-nav="about" class="mobile-nav-btn block w-full text-left px-4 py-3 rounded-2xl text-xs font-bold tracking-[0.15em] uppercase text-ink/80 hover:bg-pastelBlue/30">
+        GIỚI THIỆU
+      </button>
+      <button onclick="navigateTo('members'); toggleMobileMenu()" data-nav="members" class="mobile-nav-btn block w-full text-left px-4 py-3 rounded-2xl text-xs font-bold tracking-[0.15em] uppercase text-ink/80 hover:bg-pastelBlue/30">
+        THÀNH VIÊN
+      </button>
+      <button onclick="navigateTo('contact'); toggleMobileMenu()" data-nav="contact" class="mobile-nav-btn block w-full text-left px-4 py-3 rounded-2xl text-xs font-bold tracking-[0.15em] uppercase text-ink/80 hover:bg-pastelBlue/30">
+        LIÊN HỆ
+      </button>
+    </div>
+  </header>
+
+  <!-- NỘI DUNG CHÍNH -->
+  <main class="flex-grow">
+
+    <!-- ==================== 1. TRANG CHỦ (HOME) ==================== -->
+    <section id="view-home" class="page-view active visible">
+      <!-- Hero Section tươi sáng theo phong cách tạp chí/portfolio mẫu -->
+      <div class="relative border-b border-beige pattern-stripes overflow-hidden">
+        <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-12 sm:py-16 lg:py-20">
+          <div class="bg-creamLight/95 border-2 border-burgundy/80 rounded-[2rem] p-6 sm:p-10 lg:p-14 shadow-[8px_8px_0px_#B9D6E9] relative">
+            
+            <!-- Họa tiết 3 chấm tròn & Hoa thị retro góc trên bên phải -->
+            <div class="hidden sm:flex items-center gap-1.5 absolute top-7 right-8 text-burgundy">
+              <span class="w-2.5 h-2.5 rounded-full bg-burgundy"></span>
+              <span class="w-2.5 h-2.5 rounded-full bg-pastelBlue border border-burgundy"></span>
+              <span class="w-2.5 h-2.5 rounded-full bg-beige border border-burgundy"></span>
+            </div>
+
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-10 items-center">
+              <!-- Cột chữ nghệ thuật & giới thiệu -->
+              <div class="lg:col-span-7 text-center lg:text-left space-y-5">
+                <div class="inline-flex flex-wrap items-center justify-center lg:justify-start gap-2.5">
+                  <span class="editorial-sticker px-4 py-1 rounded-full text-xs font-bold uppercase tracking-wider">
+                    ★ Ấn Phẩm Thanh Xuân
+                  </span>
+                  <span id="hero-class-badge" class="px-3.5 py-1 rounded-full bg-beige/70 border border-burgundy/20 text-burgundy text-xs font-semibold">
+                    Lớp 12 Chuyên Văn
+                  </span>
+                </div>
+
+                <div class="space-y-1">
+                  <div class="font-script text-3xl sm:text-4xl text-pastelBlueBright drop-shadow-[0_1px_1px_rgba(104,28,39,0.45)]" style="color: #5C9BC4;">
+                    Chào mừng đến với tạp chí của
+                  </div>
+                  <div class="flex items-center justify-center lg:justify-start gap-3">
+                    <h1 id="hero-group-title" class="font-serif text-4xl sm:text-5xl lg:text-6xl font-extrabold text-burgundy tracking-tight leading-[1.08] uppercase">
+                      CHƯƠNG MƯỜI MỘT
+                    </h1>
+                    <!-- Biểu tượng hoa thị retro -->
+                    <svg class="w-8 h-8 sm:w-10 sm:h-10 text-burgundy shrink-0 animate-pulse" viewBox="0 0 24 24" fill="currentColor">
+                      <path d="M12 1L13.8 8.8L20.5 4.5L16.2 11.2L24 13L16.2 14.8L20.5 21.5L13.8 17.2L12 25L10.2 17.2L3.5 21.5L7.8 14.8L0 13L7.8 11.2L3.5 4.5L10.2 8.8L12 1Z"/>
+                    </svg>
+                  </div>
+                </div>
+
+                <p id="hero-slogan" class="font-serif italic text-lg sm:text-xl text-burgundy/90 leading-relaxed">
+                  “Mười một sắc màu riêng biệt, dệt nên một bản giao hưởng thanh xuân dịu dàng.”
+                </p>
+
+                <p id="hero-short-intro" class="text-sm sm:text-base text-ink/80 leading-relaxed max-w-2xl mx-auto lg:mx-0">
+                  Chào mừng bạn lật mở những trang tạp chí lưu giữ câu chuyện, ước mơ và cá tính của 11 thành viên trong đại gia đình nhỏ của chúng tôi.
+                </p>
+
+                <div class="pt-2 flex flex-wrap items-center justify-center lg:justify-start gap-3">
+                  <button onclick="document.getElementById('home-members-anchor').scrollIntoView({behavior:'smooth'})" class="px-6 py-3 rounded-full bg-burgundy text-creamLight text-xs font-bold tracking-[0.15em] uppercase hover:opacity-90 transition cursor-pointer shadow-sm">
+                    Khám Phá 11 Gương Mặt <i class="fa-solid fa-arrow-down ml-1.5 text-pastelBlue"></i>
+                  </button>
+                  <button onclick="navigateTo('about')" class="px-5 py-3 rounded-full bg-pastelBlue/55 hover:bg-pastelBlue text-burgundy border border-burgundy/25 text-xs font-bold tracking-[0.14em] uppercase transition cursor-pointer">
+                    Câu Chuyện Nhóm
+                  </button>
+                </div>
+              </div>
+
+              <!-- Cột khung ảnh chủ đề/tập thể bên phải Hero -->
+              <div class="lg:col-span-5">
+                <div class="relative max-w-md mx-auto">
+                  <div class="editorial-sticker-burgundy px-3.5 py-1 rounded-full text-[11px] font-bold uppercase tracking-wider absolute -top-3.5 left-4 z-10">
+                    11 Thành Viên • 1 Tập Thể
+                  </div>
+                  <div class="rounded-[1.75rem] border-2 border-burgundy bg-pastelBlue/40 p-3 shadow-[6px_6px_0px_#E7D5C3]">
+                    <div class="overflow-hidden rounded-2xl aspect-[4/3] bg-cream">
+                      <img id="hero-feature-image" src="" alt="Hình ảnh tập thể nhóm"
+                           onerror="this.src='https://placehold.co/800x600/B9D6E9/681C27?text=Tap+The+Nhom'"
+                           class="w-full h-full object-cover protected-photo" oncontextmenu="return false;" />
+                    </div>
+                  </div>
+                  <!-- Hoa thị trang trí góc dưới phải -->
+                  <div class="absolute -bottom-4 -right-3 w-11 h-11 rounded-full bg-creamLight border-2 border-burgundy flex items-center justify-center text-burgundy shadow-sm">
+                    <svg class="w-6 h-6" viewBox="0 0 24 24" fill="currentColor">
+                      <path d="M12 1L13.8 8.8L20.5 4.5L16.2 11.2L24 13L16.2 14.8L20.5 21.5L13.8 17.2L12 25L10.2 17.2L3.5 21.5L7.8 14.8L0 13L7.8 11.2L3.5 4.5L10.2 8.8L12 1Z"/>
+                    </svg>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Khu vực Danh sách 11 Thành Viên: Bố cục 4 + 4 + 3 (hàng cuối căn giữa), KHUNG ẢNH TRẢI NGANG -->
+      <div id="home-members-anchor" class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-16 sm:py-20">
+        <div class="flex flex-col items-center text-center mb-12 sm:mb-14 reveal-on-scroll">
+          <div class="inline-flex items-center gap-2 text-burgundy mb-2">
+            <svg class="w-5 h-5" viewBox="0 0 24 24" fill="currentColor"><path d="M12 1L13.8 8.8L20.5 4.5L16.2 11.2L24 13L16.2 14.8L20.5 21.5L13.8 17.2L12 25L10.2 17.2L3.5 21.5L7.8 14.8L0 13L7.8 11.2L3.5 4.5L10.2 8.8L12 1Z"/></svg>
+            <span class="text-xs uppercase tracking-[0.26em] font-bold">Gương Mặt Trang Bì</span>
+            <svg class="w-5 h-5" viewBox="0 0 24 24" fill="currentColor"><path d="M12 1L13.8 8.8L20.5 4.5L16.2 11.2L24 13L16.2 14.8L20.5 21.5L13.8 17.2L12 25L10.2 17.2L3.5 21.5L7.8 14.8L0 13L7.8 11.2L3.5 4.5L10.2 8.8L12 1Z"/></svg>
+          </div>
+          <h2 class="font-serif text-3xl sm:text-5xl font-extrabold text-burgundy tracking-tight uppercase">
+            Mười Một Mảnh Ghép
+          </h2>
+          <p class="text-xs sm:text-sm text-ink/70 mt-2">Nhấn vào từng khung hình để mở trang hồ sơ cá nhân riêng</p>
+        </div>
+
+        <!-- Lưới 11 thành viên (4 + 4 + 3 căn giữa, khung hình trải ngang) -->
+        <div id="home-members-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-8 gap-7 home-grid-11">
+          <!-- Render động qua JavaScript -->
+        </div>
+      </div>
+    </section>
+
+    <!-- ==================== 2. TRANG GIỚI THIỆU (ABOUT) ==================== -->
+    <section id="view-about" class="page-view">
+      <div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-12 sm:py-16">
+        <div class="text-center mb-10 sm:mb-12">
+          <span class="editorial-sticker inline-block px-4 py-1 rounded-full text-xs font-bold uppercase tracking-wider mb-3" id="about-class-label">
+            Lớp 12 Chuyên Văn
+          </span>
+          <h1 id="about-group-title" class="font-serif text-3xl sm:text-5xl font-extrabold text-burgundy uppercase tracking-tight">
+            Về Chương Mười Một
+          </h1>
+        </div>
+
+        <!-- Khung ảnh tập thể trải ngang -->
+        <div class="pattern-gingham border-2 border-burgundy rounded-[2rem] p-4 sm:p-6 mb-12 shadow-[8px_8px_0px_#E7D5C3]">
+          <div class="relative overflow-hidden rounded-2xl border-2 border-burgundy aspect-[16/9] bg-creamLight">
+            <img id="about-group-image" src="" alt="Hình ảnh tập thể nhóm"
+                 onerror="this.src='https://placehold.co/1200x675/B9D6E9/681C27?text=Hinh+Anh+Tap+The'"
+                 class="w-full h-full object-cover protected-photo" oncontextmenu="return false;" />
+            <div class="absolute bottom-3 left-3 bg-creamLight/95 px-4 py-1.5 rounded-full border border-burgundy text-xs font-bold text-burgundy">
+              ✦ Lưu bút tập thể • <span id="about-photo-caption">Chương Mười Một</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Nội dung giới thiệu & Thông điệp chung -->
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+          <div class="lg:col-span-7 bg-creamLight border-2 border-burgundy/80 rounded-3xl p-7 sm:p-10 shadow-[6px_6px_0px_#B9D6E9]">
+            <div class="flex items-center gap-2 text-xs uppercase tracking-[0.2em] text-burgundy font-bold mb-2">
+              <i class="fa-solid fa-bookmark"></i> Bài Viết Chuyên Đề
+            </div>
+            <h2 class="font-serif text-2xl sm:text-3xl font-bold text-burgundy mb-5">Hành Trình Gắn Kết</h2>
+            <div id="about-full-content" class="space-y-4 text-ink/85 text-sm sm:text-base leading-relaxed whitespace-pre-line"></div>
+          </div>
+
+          <div class="lg:col-span-5 pattern-stripes border-2 border-burgundy/80 rounded-3xl p-5 sm:p-6">
+            <div class="bg-creamLight border border-burgundy/40 rounded-2xl p-6 sm:p-8 relative">
+              <span class="editorial-sticker-burgundy px-3 py-1 rounded-full text-[11px] font-bold uppercase tracking-wider inline-block mb-4">
+                Thông Điệp Chung
+              </span>
+              <p id="about-shared-message" class="font-serif italic text-lg text-ink/90 leading-relaxed whitespace-pre-line"></p>
+              <div class="mt-6 pt-4 border-t border-beige flex items-center justify-between text-xs font-bold text-burgundy">
+                <span>Ban Biên Tập Nhóm</span>
+                <span>11 Thành Viên ✦</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ==================== 3. TRANG DANH SÁCH THÀNH VIÊN (MEMBERS) ==================== -->
+    <section id="view-members" class="page-view">
+      <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-12 sm:py-16">
+        <div class="text-center max-w-2xl mx-auto mb-12">
+          <span class="editorial-sticker inline-block px-4 py-1 rounded-full text-xs font-bold uppercase tracking-wider mb-3">
+            Danh Bạ Ấn Phẩm
+          </span>
+          <h1 class="font-serif text-3xl sm:text-5xl font-extrabold text-burgundy uppercase tracking-tight">
+            Tất Cả Thành Viên
+          </h1>
+          <p class="text-sm sm:text-base text-ink/75 mt-3">
+            Nhấn vào từng thẻ để mở trang hồ sơ cá nhân theo phong cách tạp chí riêng của mỗi người.
+          </p>
+        </div>
+
+        <div id="all-members-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-7">
+          <!-- Render động -->
+        </div>
+      </div>
+    </section>
+
+    <!-- ==================== 4. TRANG HỒ SƠ CÁ NHÂN (BỐ CỤC ABOUT ME NHƯ ẢNH MẪU) ==================== -->
+    <section id="view-profile" class="page-view">
+      <div id="profile-content-wrapper" class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-10 sm:py-14">
+        <!-- Render động theo bố cục ảnh mẫu -->
+      </div>
+    </section>
+
+    <!-- ==================== 5. TRANG LIÊN HỆ (CONTACT) ==================== -->
+    <section id="view-contact" class="page-view">
+      <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-14 sm:py-20">
+        <div class="pattern-gingham border-2 border-burgundy rounded-[2rem] p-5 sm:p-8 shadow-[8px_8px_0px_#B9D6E9]">
+          <div class="bg-creamLight border-2 border-burgundy/80 rounded-3xl p-8 sm:p-14 text-center relative">
+            <span class="editorial-sticker inline-block px-4 py-1 rounded-full text-xs font-bold uppercase tracking-wider mb-4">
+              Góc Kết Nối
+            </span>
+            <h1 class="font-serif text-3xl sm:text-5xl font-extrabold text-burgundy uppercase tracking-tight mb-5">
+              Liên Hệ Với Nhóm
+            </h1>
+            <p id="contact-message-text" class="font-serif italic text-lg sm:text-xl text-ink/85 max-w-2xl mx-auto leading-relaxed mb-8"></p>
+
+            <div id="contact-details-box" class="grid grid-cols-1 sm:grid-cols-2 gap-4 max-w-xl mx-auto mb-8"></div>
+            <div id="contact-socials-box" class="pt-6 border-t border-beige"></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ==================== 6. TRANG QUẢN TRỊ (ADMIN) ==================== -->
+    <section id="view-admin" class="page-view">
+      <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-10 sm:py-14">
+
+        <!-- Màn hình Đăng nhập Quản trị -->
+        <div id="admin-login-box" class="max-w-md mx-auto bg-creamLight border-2 border-burgundy rounded-[2rem] p-8 sm:p-10 shadow-[8px_8px_0px_#B9D6E9]">
+          <div class="text-center mb-6">
+            <span class="editorial-sticker inline-block px-3.5 py-1 rounded-full text-[11px] font-bold uppercase tracking-wider mb-3">
+              Khu Vực Biên Tập
+            </span>
+            <h1 class="font-serif text-3xl font-extrabold text-burgundy">Đăng Nhập Quản Trị</h1>
+            <p class="text-xs text-ink/70 mt-1">Chỉ quản trị viên mới có quyền chỉnh sửa nội dung website</p>
+          </div>
+
+          <!-- Cấu hình Supabase Auth/Database thực tế -->
+          <div class="mb-5 p-4 rounded-2xl bg-pastelBlue/30 border border-burgundy/25 text-xs text-ink/85 space-y-2">
+            <div class="font-bold text-burgundy flex items-center gap-1.5">
+              <i class="fa-solid fa-database"></i> Kết nối Supabase Online (Khuyên dùng cho GitHub Pages)
+            </div>
+            <p class="leading-relaxed text-[11px]">Nhập Project URL & Anon Key của dự án Supabase để xác thực qua Supabase Auth và đồng bộ dữ liệu trực tuyến cho mọi khách truy cập.</p>
+            <div class="space-y-2 pt-1">
+              <input type="text" id="cfg-supabase-url" placeholder="Supabase Project URL (https://xxx.supabase.co)" class="w-full px-3 py-2 rounded-xl border border-beige bg-creamLight text-xs focus:outline-none focus:border-burgundy" />
+              <input type="text" id="cfg-supabase-key" placeholder="Supabase Anon Public Key" class="w-full px-3 py-2 rounded-xl border border-beige bg-creamLight text-xs focus:outline-none focus:border-burgundy" />
+            </div>
+          </div>
+
+          <form onsubmit="handleAdminLogin(event)" class="space-y-4">
+            <div>
+              <label class="block text-xs font-bold uppercase tracking-wider text-burgundy mb-1.5">Email Quản Trị</label>
+              <input type="email" id="login-email" required value="admin@tapchi.vn" placeholder="admin@example.com" class="w-full px-4 py-3 rounded-xl border border-beige bg-white text-sm focus:outline-none focus:border-burgundy" />
+            </div>
+            <div>
+              <label class="block text-xs font-bold uppercase tracking-wider text-burgundy mb-1.5">Mật Khẩu</label>
+              <input type="password" id="login-password" required value="123456" placeholder="••••••••" class="w-full px-4 py-3 rounded-xl border border-beige bg-white text-sm focus:outline-none focus:border-burgundy" />
+            </div>
+            <button type="submit" class="w-full py-3.5 rounded-full bg-burgundy text-creamLight text-xs font-bold tracking-[0.15em] uppercase hover:opacity-90 transition cursor-pointer shadow-sm">
+              Đăng Nhập Quản Trị
+            </button>
+          </form>
+        </div>
+
+        <!-- Bảng Điều Khiển Quản Trị -->
+        <div id="admin-dashboard-box" class="hidden space-y-8">
+          <div class="bg-creamLight border-2 border-burgundy rounded-3xl p-6 flex flex-wrap items-center justify-between gap-4 shadow-[6px_6px_0px_#B9D6E9]">
+            <div>
+              <div class="flex items-center gap-2">
+                <span class="px-3 py-0.5 rounded-full bg-pastelBlue text-burgundy text-[11px] font-bold uppercase border border-burgundy/20" id="storage-mode-badge">Chế độ: Lưu Trực Tuyến</span>
+                <span class="text-xs text-ink/65" id="admin-user-label">admin@tapchi.vn</span>
+              </div>
+              <h1 class="font-serif text-2xl sm:text-3xl font-extrabold text-burgundy mt-1">Tòa Soạn Quản Trị Nội Dung</h1>
+            </div>
+
+            <div class="flex flex-wrap items-center gap-2.5">
+              <button onclick="startPreviewMode()" class="px-4 py-2.5 rounded-full bg-pastelBlue text-burgundy border border-burgundy/30 text-xs font-bold tracking-wider uppercase hover:bg-pastelBlueBright transition cursor-pointer">
+                <i class="fa-solid fa-eye mr-1.5"></i> XEM TRƯỚC
+              </button>
+              <button onclick="discardDraftChanges()" class="px-4 py-2.5 rounded-full border border-beige bg-white text-ink/80 text-xs font-bold tracking-wider uppercase hover:bg-beige/40 transition cursor-pointer">
+                <i class="fa-solid fa-rotate-left mr-1.5"></i> HỦY THAY ĐỔI
+              </button>
+              <button onclick="saveAllDataOfficial()" class="px-5 py-2.5 rounded-full bg-burgundy text-creamLight text-xs font-bold tracking-wider uppercase hover:opacity-90 transition cursor-pointer shadow-sm">
+                <i class="fa-solid fa-floppy-disk mr-1.5"></i> LƯU CÔNG KHAI
+              </button>
+              <button onclick="handleAdminLogout()" class="px-3.5 py-2.5 rounded-full border border-burgundy/30 text-burgundy text-xs font-bold hover:bg-burgundy hover:text-creamLight transition cursor-pointer" title="Đăng xuất">
+                <i class="fa-solid fa-right-from-bracket"></i>
+              </button>
+            </div>
+          </div>
+
+          <!-- Tabs Admin -->
+          <div class="flex flex-wrap gap-2.5">
+            <button onclick="switchAdminTab('members')" id="tab-btn-members" class="px-5 py-2.5 rounded-full bg-burgundy text-creamLight text-xs font-bold tracking-wider uppercase transition cursor-pointer">
+              1. Quản Lý Thành Viên (<span id="admin-member-count">11</span>)
+            </button>
+            <button onclick="switchAdminTab('site')" id="tab-btn-site" class="px-5 py-2.5 rounded-full bg-pastelBlue/50 text-burgundy border border-burgundy/20 text-xs font-bold tracking-wider uppercase hover:bg-pastelBlue transition cursor-pointer">
+              2. Nội Dung Chung, Giới Thiệu & Liên Hệ
+            </button>
+          </div>
+
+          <!-- TAB 1: QUẢN LÝ 11 THÀNH VIÊN -->
+          <div id="admin-tab-members" class="bg-creamLight border-2 border-burgundy/80 rounded-3xl p-6 sm:p-8">
+            <div class="flex flex-wrap items-center justify-between gap-4 mb-6">
+              <div>
+                <h2 class="font-serif text-2xl font-bold text-burgundy">Danh Sách Thành Viên Nhóm</h2>
+                <p class="text-xs text-ink/70 mt-1">Thêm, sửa, xóa thành viên, đổi thứ tự (1-11), cập nhật ảnh đại diện và album ảnh.</p>
+              </div>
+              <button onclick="openMemberEditorModal(null)" class="px-4 py-2.5 rounded-full bg-burgundy text-creamLight text-xs font-bold tracking-wider uppercase hover:opacity-90 transition cursor-pointer">
+                <i class="fa-solid fa-plus mr-1.5"></i> Thêm Thành Viên
+              </button>
+            </div>
+
+            <div class="overflow-x-auto">
+              <table class="w-full text-left border-collapse">
+                <thead>
+                  <tr class="border-b-2 border-burgundy/30 text-xs uppercase tracking-wider text-burgundy bg-pastelBlue/30">
+                    <th class="py-3.5 px-4 rounded-tl-xl">Thứ Tự</th>
+                    <th class="py-3.5 px-4">Ảnh</th>
+                    <th class="py-3.5 px-4">Họ Tên & Biệt Danh</th>
+                    <th class="py-3.5 px-4 hidden sm:table-cell">Ngày Sinh / Cung</th>
+                    <th class="py-3.5 px-4 text-right rounded-tr-xl">Thao Tác</th>
+                  </tr>
+                </thead>
+                <tbody id="admin-members-table-body" class="divide-y divide-beige text-sm"></tbody>
+              </table>
+            </div>
+          </div>
+
+          <!-- TAB 2: QUẢN LÝ NỘI DUNG WEBSITE -->
+          <div id="admin-tab-site" class="hidden bg-creamLight border-2 border-burgundy/80 rounded-3xl p-6 sm:p-8 space-y-6">
+            <h2 class="font-serif text-2xl font-bold text-burgundy border-b border-beige pb-3">Chỉnh Sửa Nội Dung Toàn Website</h2>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+              <div>
+                <label class="block text-xs font-bold uppercase tracking-wider text-burgundy mb-1.5">Tên Nhóm *</label>
+                <input type="text" id="draft-group-name" oninput="syncSiteDraftFromInputs()" class="w-full px-4 py-2.5 rounded-xl border border-beige bg-white text-sm" />
+              </div>
+              <div>
+                <label class="block text-xs font-bold uppercase tracking-wider text-burgundy mb-1.5">Lớp *</label>
+                <input type="text" id="draft-class-name" oninput="syncSiteDraftFromInputs()" class="w-full px-4 py-2.5 rounded-xl border border-beige bg-white text-sm" />
+              </div>
+            </div>
+
+            <div>
+              <label class="block text-xs font-bold uppercase tracking-wider text-burgundy mb-1.5">Slogan Trang Chủ</label>
+              <input type="text" id="draft-slogan" oninput="syncSiteDraftFromInputs()" class="w-full px-4 py-2.5 rounded-xl border border-beige bg-white text-sm" />
+            </div>
+
+            <div>
+              <label class="block text-xs font-bold uppercase tracking-wider text-burgundy mb-1.5">Giới Thiệu Ngắn (Trang Chủ)</label>
+              <textarea id="draft-short-intro" rows="3" oninput="syncSiteDraftFromInputs()" class="w-full px-4 py-2.5 rounded-xl border border-beige bg-white text-sm"></textarea>
+            </div>
+
+            <div class="pt-4 border-t border-beige space-y-4">
+              <h3 class="font-serif text-lg font-bold text-burgundy">Trang Giới Thiệu (About) & Ảnh Tập Thể</h3>
+              <div>
+                <label class="block text-xs font-bold uppercase tracking-wider text-burgundy mb-1.5">Ảnh Tập Thể Nhóm (Dán URL hoặc tải file từ máy)</label>
+                <div class="flex flex-col sm:flex-row gap-2.5">
+                  <input type="text" id="draft-group-image" oninput="syncSiteDraftFromInputs()" placeholder="https://..." class="flex-grow px-4 py-2.5 rounded-xl border border-beige bg-white text-sm" />
+                  <label class="px-4 py-2.5 rounded-xl bg-pastelBlue text-burgundy border border-burgundy/25 text-xs font-bold cursor-pointer hover:opacity-90 text-center shrink-0">
+                    <i class="fa-solid fa-upload mr-1"></i> Tải Ảnh Tập Thể
+                    <input type="file" accept="image/*" class="hidden" onchange="handleImageUpload(event, 'group')" />
+                  </label>
+                </div>
+              </div>
+              <div>
+                <label class="block text-xs font-bold uppercase tracking-wider text-burgundy mb-1.5">Nội Dung Giới Thiệu Đầy Đủ</label>
+                <textarea id="draft-full-about" rows="5" oninput="syncSiteDraftFromInputs()" class="w-full px-4 py-2.5 rounded-xl border border-beige bg-white text-sm"></textarea>
+              </div>
+              <div>
+                <label class="block text-xs font-bold uppercase tracking-wider text-burgundy mb-1.5">Thông Điệp Chung Của Các Thành Viên</label>
+                <textarea id="draft-shared-message" rows="3" oninput="syncSiteDraftFromInputs()" class="w-full px-4 py-2.5 rounded-xl border border-beige bg-white text-sm"></textarea>
+              </div>
+            </div>
+
+            <div class="pt-4 border-t border-beige space-y-4">
+              <h3 class="font-serif text-lg font-bold text-burgundy">Trang Liên Hệ (Contact)</h3>
+              <div>
+                <label class="block text-xs font-bold uppercase tracking-wider text-burgundy mb-1.5">Lời Nhắn / Lời Cảm Ơn Ngắn</label>
+                <textarea id="draft-contact-message" rows="2" oninput="syncSiteDraftFromInputs()" class="w-full px-4 py-2.5 rounded-xl border border-beige bg-white text-sm"></textarea>
+              </div>
+              <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div>
+                  <label class="block text-xs font-bold uppercase tracking-wider text-burgundy mb-1.5">Email Liên Hệ Chung</label>
+                  <input type="email" id="draft-contact-email" oninput="syncSiteDraftFromInputs()" class="w-full px-4 py-2.5 rounded-xl border border-beige bg-white text-sm" />
+                </div>
+                <div>
+                  <label class="block text-xs font-bold uppercase tracking-wider text-burgundy mb-1.5">Số Điện Thoại / Zalo Nhóm</label>
+                  <input type="text" id="draft-contact-phone" oninput="syncSiteDraftFromInputs()" class="w-full px-4 py-2.5 rounded-xl border border-beige bg-white text-sm" />
+                </div>
+              </div>
+              <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                <div>
+                  <label class="block text-xs font-bold uppercase tracking-wider text-burgundy mb-1.5">Facebook Nhóm</label>
+                  <input type="url" id="draft-social-fb" oninput="syncSiteDraftFromInputs()" placeholder="https://facebook.com/..." class="w-full px-4 py-2.5 rounded-xl border border-beige bg-white text-sm" />
+                </div>
+                <div>
+                  <label class="block text-xs font-bold uppercase tracking-wider text-burgundy mb-1.5">Instagram Nhóm</label>
+                  <input type="url" id="draft-social-ig" oninput="syncSiteDraftFromInputs()" placeholder="https://instagram.com/..." class="w-full px-4 py-2.5 rounded-xl border border-beige bg-white text-sm" />
+                </div>
+                <div>
+                  <label class="block text-xs font-bold uppercase tracking-wider text-burgundy mb-1.5">TikTok Nhóm</label>
+                  <input type="url" id="draft-social-tiktok" oninput="syncSiteDraftFromInputs()" placeholder="https://tiktok.com/@..." class="w-full px-4 py-2.5 rounded-xl border border-beige bg-white text-sm" />
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- FOOTER -->
+  <footer class="bg-pastelBlue/35 border-t-2 border-burgundy/20 mt-auto">
+    <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
+      <div class="flex flex-col sm:flex-row items-center justify-between gap-4 text-center sm:text-left">
+        <div>
+          <div id="footer-group-name" class="font-serif text-xl font-extrabold text-burgundy">CHƯƠNG MƯỜI MỘT</div>
+          <p class="text-xs text-ink/75 mt-1">Ấn phẩm tạp chí điện tử lưu giữ thanh xuân tập thể.</p>
+        </div>
+        <div class="flex flex-wrap justify-center gap-5 text-xs font-bold tracking-wider uppercase text-burgundy">
+          <button onclick="navigateTo('home')" class="hover:underline cursor-pointer">Trang Chủ</button>
+          <button onclick="navigateTo('about')" class="hover:underline cursor-pointer">Giới Thiệu</button>
+          <button onclick="navigateTo('members')" class="hover:underline cursor-pointer">Thành Viên</button>
+          <button onclick="navigateTo('contact')" class="hover:underline cursor-pointer">Liên Hệ</button>
+        </div>
+      </div>
+    </div>
+  </footer>
+
+  <!-- MODAL CHỈNH SỬA / THÊM THÀNH VIÊN -->
+  <div id="member-editor-modal" class="hidden fixed inset-0 z-[70] bg-ink/65 backdrop-blur-xs flex items-center justify-center p-4">
+    <div class="bg-creamLight border-2 border-burgundy rounded-3xl w-full max-w-2xl max-h-[90vh] overflow-y-auto p-6 sm:p-8 shadow-2xl">
+      <div class="flex items-center justify-between border-b border-beige pb-4 mb-6">
+        <h2 id="editor-modal-title" class="font-serif text-2xl font-extrabold text-burgundy">Chỉnh Sửa Hồ Sơ Thành Viên</h2>
+        <button onclick="closeMemberEditorModal()" class="w-9 h-9 rounded-full bg-pastelBlue/50 text-burgundy hover:bg-burgundy hover:text-creamLight transition cursor-pointer">
+          <i class="fa-solid fa-xmark"></i>
+        </button>
+      </div>
+
+      <form onsubmit="applyMemberModalToDraft(event)" class="space-y-4">
+        <input type="hidden" id="edit-m-id" />
+
+        <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+          <div>
+            <label class="block text-xs font-bold uppercase tracking-wider text-burgundy mb-1">Thứ Tự (1-11)</label>
+            <input type="number" id="edit-m-order" min="1" max="50" required class="w-full px-3.5 py-2.5 rounded-xl border border-beige bg-white text-sm" />
+          </div>
+          <div class="sm:col-span-2">
+            <label class="block text-xs font-bold uppercase tracking-wider text-burgundy mb-1">Họ và Tên *</label>
+            <input type="text" id="edit-m-name" required placeholder="Nguyễn Minh Anh" class="w-full px-3.5 py-2.5 rounded-xl border border-beige bg-white text-sm" />
+          </div>
+        </div>
+
+        <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+          <div>
+            <label class="block text-xs font-bold uppercase tracking-wider text-burgundy mb-1">Biệt Danh</label>
+            <input type="text" id="edit-m-nickname" placeholder="Mimi" class="w-full px-3.5 py-2.5 rounded-xl border border-beige bg-white text-sm" />
+          </div>
+          <div>
+            <label class="block text-xs font-bold uppercase tracking-wider text-burgundy mb-1">Ngày Sinh</label>
+            <input type="text" id="edit-m-birthdate" placeholder="14/02/2008" class="w-full px-3.5 py-2.5 rounded-xl border border-beige bg-white text-sm" />
+          </div>
+          <div>
+            <label class="block text-xs font-bold uppercase tracking-wider text-burgundy mb-1">Cung Hoàng Đạo</label>
+            <input type="text" id="edit-m-zodiac" placeholder="Bảo Bình" class="w-full px-3.5 py-2.5 rounded-xl border border-beige bg-white text-sm" />
+          </div>
+        </div>
+
+        <!-- Ảnh đại diện -->
+        <div>
+          <label class="block text-xs font-bold uppercase tracking-wider text-burgundy mb-1">Ảnh Đại Diện Chính (Dán URL hoặc tải ảnh từ máy)</label>
+          <div class="flex flex-col sm:flex-row gap-2">
+            <input type="text" id="edit-m-avatar" placeholder="https://..." class="flex-grow px-3.5 py-2.5 rounded-xl border border-beige bg-white text-sm" />
+            <label class="px-4 py-2.5 rounded-xl bg-pastelBlue text-burgundy border border-burgundy/25 text-xs font-bold cursor-pointer hover:opacity-90 text-center shrink-0">
+              <i class="fa-solid fa-camera mr-1"></i> Tải Ảnh Lên
+              <input type="file" accept="image/*" class="hidden" onchange="handleImageUpload(event, 'avatar')" />
+            </label>
+          </div>
+        </div>
+
+        <!-- Sở thích -->
+        <div class="p-4 rounded-2xl bg-pastelBlue/25 border border-pastelBlue space-y-3">
+          <div class="text-xs font-bold uppercase tracking-wider text-burgundy">Sở Thích Cá Nhân</div>
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+            <div>
+              <label class="block text-[11px] font-semibold text-ink/75 mb-1">Món ăn yêu thích</label>
+              <input type="text" id="edit-m-food" class="w-full px-3 py-2 rounded-xl border border-beige bg-white text-sm" />
+            </div>
+            <div>
+              <label class="block text-[11px] font-semibold text-ink/75 mb-1">Màu sắc yêu thích</label>
+              <input type="text" id="edit-m-color" class="w-full px-3 py-2 rounded-xl border border-beige bg-white text-sm" />
+            </div>
+            <div>
+              <label class="block text-[11px] font-semibold text-ink/75 mb-1">Thể loại nhạc yêu thích</label>
+              <input type="text" id="edit-m-music" class="w-full px-3 py-2 rounded-xl border border-beige bg-white text-sm" />
+            </div>
+            <div>
+              <label class="block text-[11px] font-semibold text-ink/75 mb-1">Những sở thích khác</label>
+              <input type="text" id="edit-m-hobbies" class="w-full px-3 py-2 rounded-xl border border-beige bg-white text-sm" />
+            </div>
+          </div>
+        </div>
+
+        <!-- Ước mơ, Gia đình, Fun Facts -->
+        <div>
+          <label class="block text-xs font-bold uppercase tracking-wider text-burgundy mb-1">Ước Mơ & Mục Tiêu Tương Lai</label>
+          <textarea id="edit-m-dreams" rows="2" class="w-full px-3.5 py-2 rounded-xl border border-beige bg-white text-sm"></textarea>
+        </div>
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <div>
+            <label class="block text-xs font-bold uppercase tracking-wider text-burgundy mb-1">Gia Đình (Tùy chọn - Trống sẽ tự ẩn)</label>
+            <textarea id="edit-m-family" rows="2" class="w-full px-3.5 py-2 rounded-xl border border-beige bg-white text-sm"></textarea>
+          </div>
+          <div>
+            <label class="block text-xs font-bold uppercase tracking-wider text-burgundy mb-1">Fun Facts / Điều Thú Vị (Trống sẽ tự ẩn)</label>
+            <textarea id="edit-m-facts" rows="2" class="w-full px-3.5 py-2 rounded-xl border border-beige bg-white text-sm"></textarea>
+          </div>
+        </div>
+
+        <!-- Mạng xã hội -->
+        <div>
+          <label class="block text-xs font-bold uppercase tracking-wider text-burgundy mb-1.5">Liên Kết Mạng Xã Hội (Chỉ hiện biểu tượng nào có link)</label>
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+            <input type="url" id="edit-m-fb" placeholder="Facebook URL (https://...)" class="w-full px-3.5 py-2 rounded-xl border border-beige bg-white text-sm" />
+            <input type="url" id="edit-m-ig" placeholder="Instagram URL (https://...)" class="w-full px-3.5 py-2 rounded-xl border border-beige bg-white text-sm" />
+            <input type="url" id="edit-m-zalo" placeholder="Zalo URL (https://zalo.me/...)" class="w-full px-3.5 py-2 rounded-xl border border-beige bg-white text-sm" />
+            <input type="url" id="edit-m-tiktok" placeholder="TikTok URL (https://tiktok.com/@...)" class="w-full px-3.5 py-2 rounded-xl border border-beige bg-white text-sm" />
+          </div>
+        </div>
+
+        <!-- Album Ảnh -->
+        <div class="p-4 rounded-2xl bg-beige/35 border border-beige space-y-3">
+          <div class="flex items-center justify-between">
+            <label class="text-xs font-bold uppercase tracking-wider text-burgundy">Album Ảnh Kỷ Niệm</label>
+            <label class="px-3 py-1.5 rounded-full bg-burgundy text-creamLight text-[11px] font-bold cursor-pointer hover:opacity-90">
+              <i class="fa-solid fa-plus mr-1"></i> Thêm Ảnh Từ Máy
+              <input type="file" accept="image/*" multiple class="hidden" onchange="handleImageUpload(event, 'album')" />
+            </label>
+          </div>
+          <div class="flex gap-2">
+            <input type="url" id="new-album-url-input" placeholder="Hoặc dán đường dẫn ảnh (https://...) rồi nhấn Thêm" class="flex-grow px-3 py-2 rounded-xl border border-beige bg-white text-xs" />
+            <button type="button" onclick="addAlbumUrlManual()" class="px-3.5 py-2 rounded-xl bg-pastelBlue text-burgundy text-xs font-bold cursor-pointer">Thêm</button>
+          </div>
+          <div id="edit-album-preview-list" class="grid grid-cols-3 sm:grid-cols-4 gap-2.5 pt-1"></div>
+        </div>
+
+        <div class="flex items-center justify-end gap-3 pt-4 border-t border-beige">
+          <button type="button" onclick="closeMemberEditorModal()" class="px-5 py-2.5 rounded-full border border-beige bg-white text-ink text-xs font-bold uppercase tracking-wider cursor-pointer">
+            Đóng
+          </button>
+          <button type="submit" class="px-6 py-2.5 rounded-full bg-burgundy text-creamLight text-xs font-bold uppercase tracking-wider hover:opacity-90 cursor-pointer">
+            Áp Dụng Vào Bản Nháp
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- LIGHTBOX XEM ẢNH LỚN ALBUM -->
+  <div id="album-lightbox" class="hidden fixed inset-0 z-[80] bg-ink/90 backdrop-blur-sm flex items-center justify-center p-4" onclick="closeLightboxOnBackdrop(event)">
+    <button onclick="closeLightbox()" aria-label="Đóng" class="absolute top-5 right-5 w-11 h-11 rounded-full bg-creamLight/20 hover:bg-burgundy text-creamLight flex items-center justify-center text-lg transition cursor-pointer">
+      <i class="fa-solid fa-xmark"></i>
+    </button>
+
+    <button onclick="changeLightboxSlide(-1)" aria-label="Ảnh trước" class="absolute left-3 sm:left-6 w-11 h-11 rounded-full bg-creamLight/20 hover:bg-burgundy text-creamLight flex items-center justify-center text-lg transition cursor-pointer">
+      <i class="fa-solid fa-chevron-left"></i>
+    </button>
+
+    <div class="max-w-4xl max-h-[82vh] flex flex-col items-center">
+      <img id="lightbox-main-img" src="" alt="Xem ảnh album" class="max-w-full max-h-[75vh] object-contain rounded-2xl border-2 border-pastelBlue shadow-2xl protected-photo" oncontextmenu="return false;" />
+      <div id="lightbox-counter" class="mt-3 px-4 py-1 rounded-full bg-creamLight/20 text-creamLight text-xs font-bold tracking-widest">1 / 1</div>
+    </div>
+
+    <button onclick="changeLightboxSlide(1)" aria-label="Ảnh tiếp theo" class="absolute right-3 sm:right-6 w-11 h-11 rounded-full bg-creamLight/20 hover:bg-burgundy text-creamLight flex items-center justify-center text-lg transition cursor-pointer">
+      <i class="fa-solid fa-chevron-right"></i>
+    </button>
+  </div>
+
+  <!-- TOAST THÔNG BÁO TRẠNG THÁI -->
+  <div id="toast-container" class="fixed bottom-5 right-5 z-[90] flex flex-col gap-2 max-w-sm"></div>
+
+  <script>
+    /**
+     * =========================================================================
+     * DỮ LIỆU KHỞI TẠO & CẤU HÌNH HỆ THỐNG TẠP CHÍ ĐIỆN TỬ 11 THÀNH VIÊN
+     * =========================================================================
+     */
+    const DEFAULT_SITE_DATA = {
+      settings: {
+        group_name: "CHƯƠNG MƯỜI MỘT",
+        class_name: "Lớp 12 Chuyên Văn • Niên khóa 2023 – 2026",
+        slogan: "“Mười một sắc màu riêng biệt, dệt nên một bản giao hưởng thanh xuân dịu dàng.”",
+        short_intro: "Chào mừng bạn lật mở những trang tạp chí lưu giữ câu chuyện, ước mơ và cá tính của 11 thành viên trong nhóm học tập của chúng tôi. Mỗi gương mặt là một mảnh ghép không thể thay thế.",
+        group_image_url: "https://images.unsplash.com/photo-1529156069898-49953e39b3ac?auto=format&fit=crop&w=1400&q=80",
+        full_about: "Chúng tôi gặp nhau vào những ngày đầu thu đầy nắng, mang theo 11 cá tính tưởng chừng đối lập nhưng lại hòa quyện một cách kỳ diệu. Từ những buổi thảo luận nhóm bên ly trà sữa, những đêm cùng nhau chạy hạn nộp bài thuyết trình, cho đến những chuyến dã ngoại cuối tuần đầy tiếng cười.\n\nCuốn tạp chí điện tử này được tạo ra như một cuốn lưu bút số mang hơi thở cổ điển kết hợp sắc pastel tươi sáng, nơi lưu giữ nguyên vẹn ánh mắt, nụ cười và những hoài bão tuổi mười tám của từng thành viên trước ngưỡng cửa trưởng thành.",
+        shared_message: "Dù mai này mỗi người bước trên một hành trình riêng, mong rằng khi mở lại những trang tạp chí này, chúng ta vẫn luôn nhớ về một tập thể đã từng rực rỡ và hết mình vì nhau như thế.",
+        contact_message: "Cảm ơn bạn đã dành thời gian ghé thăm ấn phẩm tạp chí nhỏ của chúng tôi. Mọi lời nhắn gửi hoặc kết nối hợp tác học tập xin vui lòng liên hệ qua thông tin bên dưới.",
+        contact_email: "chuongmuoimot.editorial@gmail.com",
+        contact_phone: "0905 112 026",
+        social_facebook: "https://facebook.com",
+        social_instagram: "https://instagram.com",
+        social_tiktok: "https://tiktok.com"
+      },
+      members: [
+        {
+          id: 1,
+          order_index: 1,
+          full_name: "Nguyễn Minh Anh",
+          nickname: "Mimi",
+          birthdate: "14/02/2008",
+          zodiac: "Bảo Bình",
+          avatar_url: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=900&q=80",
+          fav_food: "Bánh tiramisu trà xanh, Phở cuốn",
+          fav_color: "Xanh pastel & Kem sữa",
+          fav_music: "Indie Pop, Acoustic dịu nhẹ",
+          hobbies: "Chụp ảnh phim, viết nhật ký, sưu tầm tem cổ",
+          family_info: "Con gái út trong gia đình có hai chị em, luôn được bố mẹ ủng hộ theo đuổi nghệ thuật.",
+          dreams: "Trở thành biên tập viên tạp chí văn hóa và xuất bản một cuốn tản văn đầu tay.",
+          fun_facts: "Có thể thuộc lòng lời hơn 100 bài hát nhạc Trịnh nhưng lại hay quên chìa khóa xe.",
+          facebook: "https://facebook.com",
+          instagram: "https://instagram.com",
+          zalo: "https://zalo.me",
+          tiktok: "",
+          album_urls: [
+            "https://images.unsplash.com/photo-1517841905240-472988babdf9?auto=format&fit=crop&w=1000&q=80",
+            "https://images.unsplash.com/photo-1524504388940-b1c1722653e1?auto=format&fit=crop&w=1000&q=80",
+            "https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&w=1000&q=80"
+          ]
+        },
+        {
+          id: 2,
+          order_index: 2,
+          full_name: "Trần Hoàng Nam",
+          nickname: "Nam Cận",
+          birthdate: "22/08/2008",
+          zodiac: "Sư Tử",
+          avatar_url: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=900&q=80",
+          fav_food: "Cơm tấm sườn bì chả, Cà phê muối",
+          fav_color: "Đỏ rượu vang & Nâu trầm",
+          fav_music: "Lo-fi Jazz, Nhạc phim cổ điển",
+          hobbies: "Đọc sách lịch sử, chơi cờ vua, thiết kế đồ họa",
+          family_info: "",
+          dreams: "Trở thành kiến trúc sư bảo tồn các công trình di sản Đông Dương.",
+          fun_facts: "Luôn mang theo một cuốn sổ phác thảo nhỏ trong balo mọi lúc mọi nơi.",
+          facebook: "https://facebook.com",
+          instagram: "https://instagram.com",
+          zalo: "",
+          tiktok: "https://tiktok.com",
+          album_urls: [
+            "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?auto=format&fit=crop&w=1000&q=80",
+            "https://images.unsplash.com/photo-1519085360753-af0119f7cbe7?auto=format&fit=crop&w=1000&q=80"
+          ]
+        },
+        {
+          id: 3,
+          order_index: 3,
+          full_name: "Lê Thảo Vy",
+          nickname: "Vy Bông",
+          birthdate: "05/05/2008",
+          zodiac: "Kim Ngưu",
+          avatar_url: "https://images.unsplash.com/photo-1524504388940-b1c1722653e1?auto=format&fit=crop&w=900&q=80",
+          fav_food: "Mì Ý sốt kem nấm, Trà đào cam sả",
+          fav_color: "Be nhạt & Vàng bơ",
+          fav_music: "R&B, Ballad",
+          hobbies: "Làm bánh ngọt, cắm hoa khô, xem phim điện ảnh châu Âu",
+          family_info: "Lớn lên trong tiệm bánh nhỏ của mẹ nên rất khéo tay.",
+          dreams: "Mở một tiệm bánh kết hợp không gian đọc sách yên tĩnh giữa lòng Đà Lạt.",
+          fun_facts: "Cười rất giòn và là 'cây hài' chuyên giải tỏa căng thẳng mỗi khi cả nhóm ôn thi.",
+          facebook: "https://facebook.com",
+          instagram: "https://instagram.com",
+          zalo: "https://zalo.me",
+          tiktok: "https://tiktok.com",
+          album_urls: [
+            "https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=1000&q=80",
+            "https://images.unsplash.com/photo-1529626455594-4ff0802cfb7e?auto=format&fit=crop&w=1000&q=80"
+          ]
+        },
+        {
+          id: 4,
+          order_index: 4,
+          full_name: "Phạm Gia Huy",
+          nickname: "Huy Guitar",
+          birthdate: "19/11/2008",
+          zodiac: "Bọ Cạp",
+          avatar_url: "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?auto=format&fit=crop&w=900&q=80",
+          fav_food: "Bún bò Huế, Bánh mì chảo",
+          fav_color: "Xanh navy & Trắng kem",
+          fav_music: "Rock Ballad, Acoustic",
+          hobbies: "Đệm đàn guitar, chạy bộ buổi sáng, nhiếp ảnh đường phố",
+          family_info: "",
+          dreams: "Kỹ sư công nghệ sáng tạo ứng dụng hỗ trợ giáo dục vùng cao.",
+          fun_facts: "Ít nói lúc mới gặp nhưng đã thân thì kể chuyện không dứt.",
+          facebook: "https://facebook.com",
+          instagram: "",
+          zalo: "https://zalo.me",
+          tiktok: "",
+          album_urls: [
+            "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=1000&q=80"
+          ]
+        },
+        {
+          id: 5,
+          order_index: 5,
+          full_name: "Đỗ Khánh Linh",
+          nickname: "Linh Đan",
+          birthdate: "30/03/2008",
+          zodiac: "Bạch Dương",
+          avatar_url: "https://images.unsplash.com/photo-1517841905240-472988babdf9?auto=format&fit=crop&w=900&q=80",
+          fav_food: "Matcha latte, Bánh crepe sầu riêng",
+          fav_color: "Hồng phấn & Xanh bạc hà",
+          fav_music: "K-Indie, City Pop",
+          hobbies: "Vẽ màu nước, thiết kế bullet journal, học ngoại ngữ",
+          family_info: "Gia đình có truyền thống sư phạm, luôn đề cao sự tự lập.",
+          dreams: "Du học ngành Truyền thông Đa phương tiện và làm việc tại các tổ chức văn hóa quốc tế.",
+          fun_facts: "Có bộ sưu tập hơn 40 cây bút máy và mực viết đủ sắc độ.",
+          facebook: "https://facebook.com",
+          instagram: "https://instagram.com",
+          zalo: "",
+          tiktok: "https://tiktok.com",
+          album_urls: [
+            "https://images.unsplash.com/photo-1488426862026-3ee34a7d66df?auto=format&fit=crop&w=1000&q=80",
+            "https://images.unsplash.com/photo-1524504388940-b1c1722653e1?auto=format&fit=crop&w=1000&q=80"
+          ]
+        },
+        {
+          id: 6,
+          order_index: 6,
+          full_name: "Vũ Đức Anh",
+          nickname: "Đức Béo",
+          birthdate: "11/07/2008",
+          zodiac: "Cự Giải",
+          avatar_url: "https://images.unsplash.com/photo-1519085360753-af0119f7cbe7?auto=format&fit=crop&w=900&q=80",
+          fav_food: "Lẩu Thái, Gà rán mật ong",
+          fav_color: "Xanh pastel & Xám tro",
+          fav_music: "Pop US-UK, Nhạc không lời",
+          hobbies: "Nấu ăn cho bạn bè, bơi lội, sưu tầm mô hình",
+          family_info: "Là anh cả trong nhà, rất chu đáo và biết quan tâm người khác.",
+          dreams: "Trở thành chuyên gia quản trị chuỗi cung ứng hoặc đầu bếp sáng tạo.",
+          fun_facts: "Người giữ 'kho lương thực' của cả nhóm trong mọi tiết học chiều.",
+          facebook: "https://facebook.com",
+          instagram: "https://instagram.com",
+          zalo: "https://zalo.me",
+          tiktok: "",
+          album_urls: []
+        },
+        {
+          id: 7,
+          order_index: 7,
+          full_name: "Hoàng Mai Phương",
+          nickname: "Phương Mây",
+          birthdate: "27/09/2008",
+          zodiac: "Thiên Bình",
+          avatar_url: "https://images.unsplash.com/photo-1529626455594-4ff0802cfb7e?auto=format&fit=crop&w=900&q=80",
+          fav_food: "Gỏi cuốn tôm thịt, Chè dưỡng nhan",
+          fav_color: "Trắng ngà & Xanh trời nhạt",
+          fav_music: "Nhạc cổ điển, V-Pop nhẹ nhàng",
+          hobbies: "Múa đương đại, đọc tiểu thuyết kinh điển, ngắm mây trời",
+          family_info: "",
+          dreams: "Trở thành nhà tâm lý học học đường để lắng nghe và đồng hành cùng các bạn trẻ.",
+          fun_facts: "Chụp ảnh bầu trời mỗi ngày suốt 3 năm cấp ba không bỏ sót ngày nào.",
+          facebook: "https://facebook.com",
+          instagram: "https://instagram.com",
+          zalo: "",
+          tiktok: "https://tiktok.com",
+          album_urls: [
+            "https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=1000&q=80"
+          ]
+        },
+        {
+          id: 8,
+          order_index: 8,
+          full_name: "Bùi Quang Minh",
+          nickname: "Minh Nhí",
+          birthdate: "03/12/2008",
+          zodiac: "Nhân Mã",
+          avatar_url: "https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?auto=format&fit=crop&w=900&q=80",
+          fav_food: "Bánh cuốn nóng, Trà tắc",
+          fav_color: "Đỏ đô & Vàng mù tạt",
+          fav_music: "Hip-hop Melodic, Indie Việt",
+          hobbies: "Bóng rổ, làm video vlog kỷ niệm, khám phá quán cà phê cũ",
+          family_info: "Gia đình luôn khuyến khích tự do trải nghiệm và khám phá thế giới.",
+          dreams: "Đạo diễn hình ảnh (DOP) cho các bộ phim điện ảnh độc lập.",
+          fun_facts: "Là người quay và dựng toàn bộ clip hậu trường cho nhóm.",
+          facebook: "https://facebook.com",
+          instagram: "https://instagram.com",
+          zalo: "https://zalo.me",
+          tiktok: "https://tiktok.com",
+          album_urls: [
+            "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?auto=format&fit=crop&w=1000&q=80"
+          ]
+        },
+        {
+          id: 9,
+          order_index: 9,
+          full_name: "Ngô Bảo Ngọc",
+          nickname: "Ngọc Sóc",
+          birthdate: "16/06/2008",
+          zodiac: "Song Tử",
+          avatar_url: "https://images.unsplash.com/photo-1488426862026-3ee34a7d66df?auto=format&fit=crop&w=900&q=80",
+          fav_food: "Dimsum, Kem vani hạnh nhân",
+          fav_color: "Xanh baby blue & Kem",
+          fav_music: "Pop, Nhạc kịch Broadway",
+          hobbies: "Thuyết trình, dẫn chương trình, đọc sách trinh thám",
+          family_info: "Được ông nội rèn luyện thói quen đọc báo và bình luận thời sự từ nhỏ.",
+          dreams: "Biên tập viên truyền hình và nhà hoạt động vì quyền trẻ em.",
+          fun_facts: "Có khả năng nói lưu loát không vấp chữ nào ngay cả khi chỉ chuẩn bị trước 5 phút.",
+          facebook: "https://facebook.com",
+          instagram: "https://instagram.com",
+          zalo: "",
+          tiktok: "",
+          album_urls: [
+            "https://images.unsplash.com/photo-1517841905240-472988babdf9?auto=format&fit=crop&w=1000&q=80"
+          ]
+        },
+        {
+          id: 10,
+          order_index: 10,
+          full_name: "Đặng Tuấn Kiệt",
+          nickname: "Kiệt Lơ",
+          birthdate: "08/01/2008",
+          zodiac: "Ma Kết",
+          avatar_url: "https://images.unsplash.com/photo-1492562080023-ab3db95bfbce?auto=format&fit=crop&w=900&q=80",
+          fav_food: "Phở bò tái lăn, Trà ô long",
+          fav_color: "Be cát & Xanh rêu nhạt",
+          fav_music: "Symphony, Piano solo",
+          hobbies: "Giải toán tư duy, chơi piano, lắp ráp mô hình gỗ",
+          family_info: "",
+          dreams: "Nhà nghiên cứu khoa học dữ liệu ứng dụng trong kinh tế xanh.",
+          fun_facts: "Gương mặt lúc nào cũng trầm ngâm suy nghĩ nhưng thực ra đang nghĩ trưa nay ăn gì.",
+          facebook: "https://facebook.com",
+          instagram: "",
+          zalo: "https://zalo.me",
+          tiktok: "",
+          album_urls: []
+        },
+        {
+          id: 11,
+          order_index: 11,
+          full_name: "Trịnh Phương Uyên",
+          nickname: "Uyên Nhi",
+          birthdate: "24/10/2008",
+          zodiac: "Thiên Yết",
+          avatar_url: "https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&w=900&q=80",
+          fav_food: "Bánh bèo chén, Sữa đậu nành ấm",
+          fav_color: "Đỏ burgundy & Hồng đào",
+          fav_music: "Ballad Việt, Nhạc Trịnh",
+          hobbies: "Thêu tay thủ công, viết thơ, chăm sóc mèo",
+          family_info: "Sống cùng bà ngoại từ nhỏ nên rất yêu những giá trị truyền thống.",
+          dreams: "Nhà thiết kế thời trang bền vững lấy cảm hứng từ trang phục cổ truyền Việt Nam.",
+          fun_facts: "Tự tay thêu khăn tay tặng sinh nhật cho đủ 10 thành viên còn lại trong nhóm.",
+          facebook: "https://facebook.com",
+          instagram: "https://instagram.com",
+          zalo: "https://zalo.me",
+          tiktok: "https://tiktok.com",
+          album_urls: [
+            "https://images.unsplash.com/photo-1529626455594-4ff0802cfb7e?auto=format&fit=crop&w=1000&q=80",
+            "https://images.unsplash.com/photo-1488426862026-3ee34a7d66df?auto=format&fit=crop&w=1000&q=80"
+          ]
+        }
+      ]
+    };
+
+    // Trạng thái hệ thống
+    let officialData = null;
+    let draftData = null;
+    let isPreviewMode = false;
+    let isAdminLoggedIn = false;
+    let supabaseClient = null;
+    let currentMemberId = null;
+    let modalAlbumUrls = [];
+    let lightboxImages = [];
+    let lightboxIndex = 0;
+
+    const STORAGE_KEY_DATA = "chuong11_editorial_bright_v2";
+    const STORAGE_KEY_SB = "chuong11_supabase_cfg_v2";
+    const STORAGE_KEY_AUTH = "chuong11_admin_session_v2";
+
+    window.addEventListener("DOMContentLoaded", async () => {
+      initSupabaseFromSavedConfig();
+      await loadInitialData();
+      renderEntireSite();
+      setupScrollObserver();
+
+      document.addEventListener("keydown", (e) => {
+        const lb = document.getElementById("album-lightbox");
+        if (!lb.classList.contains("hidden")) {
+          if (e.key === "Escape") closeLightbox();
+          if (e.key === "ArrowLeft") changeLightboxSlide(-1);
+          if (e.key === "ArrowRight") changeLightboxSlide(1);
+        }
+      });
+    });
+
+    function initSupabaseFromSavedConfig() {
+      try {
+        const savedCfg = JSON.parse(localStorage.getItem(STORAGE_KEY_SB) || "null");
+        if (savedCfg && savedCfg.url && savedCfg.key && window.supabase) {
+          document.getElementById("cfg-supabase-url").value = savedCfg.url;
+          document.getElementById("cfg-supabase-key").value = savedCfg.key;
+          supabaseClient = window.supabase.createClient(savedCfg.url, savedCfg.key);
+        }
+      } catch (err) {
+        console.warn("Supabase chưa được cấu hình:", err);
+      }
+    }
+
+    async function loadInitialData() {
+      if (supabaseClient) {
+        try {
+          const { data: setRow, error: setErr } = await supabaseClient.from("settings").select("*").eq("id", 1).single();
+          const { data: memRows, error: memErr } = await supabaseClient.from("members").select("*").order("order_index", { ascending: true });
+
+          if (!setErr && setRow && !memErr && memRows) {
+            officialData = {
+              settings: {
+                group_name: setRow.group_name || DEFAULT_SITE_DATA.settings.group_name,
+                class_name: setRow.class_name || DEFAULT_SITE_DATA.settings.class_name,
+                slogan: setRow.slogan || "",
+                short_intro: setRow.short_intro || "",
+                group_image_url: setRow.group_image_url || "",
+                full_about: setRow.full_about || "",
+                shared_message: setRow.shared_message || "",
+                contact_message: setRow.contact_message || "",
+                contact_email: setRow.contact_email || "",
+                contact_phone: setRow.contact_phone || "",
+                social_facebook: setRow.social_facebook || "",
+                social_instagram: setRow.social_instagram || "",
+                social_tiktok: setRow.social_tiktok || ""
+              },
+              members: memRows
+            };
+            draftData = JSON.parse(JSON.stringify(officialData));
+            return;
+          }
+        } catch (err) {
+          console.warn("Chuyển sang dữ liệu cục bộ:", err);
+        }
+      }
+
+      try {
+        const localSaved = localStorage.getItem(STORAGE_KEY_DATA);
+        if (localSaved) {
+          officialData = JSON.parse(localSaved);
+        } else {
+          officialData = JSON.parse(JSON.stringify(DEFAULT_SITE_DATA));
+          localStorage.setItem(STORAGE_KEY_DATA, JSON.stringify(officialData));
+        }
+      } catch (e) {
+        officialData = JSON.parse(JSON.stringify(DEFAULT_SITE_DATA));
+      }
+
+      draftData = JSON.parse(JSON.stringify(officialData));
+      if (sessionStorage.getItem(STORAGE_KEY_AUTH) === "true") {
+        isAdminLoggedIn = true;
+      }
+    }
+
+    function getActiveData() {
+      return isPreviewMode ? draftData : officialData;
+    }
+
+    /**
+     * Điều hướng & Hiệu ứng chuyển trang trượt ngang
+     */
+    function navigateTo(viewName, memberId = null) {
+      const views = document.querySelectorAll(".page-view");
+      views.forEach(v => {
+        v.classList.remove("visible");
+        setTimeout(() => {
+          if (!v.classList.contains("visible")) {
+            v.classList.remove("active");
+          }
+        }, 190);
+      });
+
+      const targetEl = document.getElementById(`view-${viewName}`);
+      setTimeout(() => {
+        views.forEach(v => v.classList.remove("active"));
+        targetEl.classList.add("active");
+        void targetEl.offsetWidth;
+        targetEl.classList.add("visible");
+        window.scrollTo({ top: 0, behavior: "smooth" });
+        triggerRevealElements();
+      }, 170);
+
+      document.querySelectorAll(".nav-btn").forEach(btn => {
+        const nav = btn.getAttribute("data-nav");
+        if (nav === "admin") return;
+        if (nav === viewName || (viewName === "profile" && nav === "members")) {
+          btn.className = "nav-btn px-4 py-2 rounded-full text-xs font-bold tracking-[0.14em] uppercase bg-pastelBlue/65 text-burgundy border border-burgundy/25 transition cursor-pointer";
+        } else {
+          btn.className = "nav-btn px-4 py-2 rounded-full text-xs font-bold tracking-[0.14em] uppercase text-ink/75 hover:bg-pastelBlue/35 hover:text-burgundy border border-transparent transition cursor-pointer";
+        }
+      });
+
+      if (viewName === "profile" && memberId !== null) {
+        currentMemberId = memberId;
+        renderMemberProfile(memberId);
+      }
+
+      if (viewName === "admin") {
+        updateAdminUIState();
+      }
+    }
+
+    function toggleMobileMenu() {
+      document.getElementById("mobile-menu").classList.toggle("hidden");
+    }
+
+    /**
+     * =========================================================================
+     * RENDER TOÀN BỘ WEBSITE (TRANG CHỦ KHUNG NGANG, ABOUT, MEMBERS, CONTACT)
+     * =========================================================================
+     */
+    function renderEntireSite() {
+      const data = getActiveData();
+      const s = data.settings;
+      const members = [...data.members].sort((a, b) => (a.order_index || 0) - (b.order_index || 0));
+
+      document.getElementById("header-group-name").textContent = s.group_name || "TẠP CHÍ NHÓM";
+      document.getElementById("footer-group-name").textContent = s.group_name || "TẠP CHÍ NHÓM";
+      document.title = `${s.group_name || "Tạp Chí Nhóm"} - Digital Editorial Magazine`;
+
+      // 1. Hero Section
+      document.getElementById("hero-class-badge").textContent = s.class_name || "";
+      document.getElementById("hero-group-title").textContent = s.group_name || "";
+      document.getElementById("hero-slogan").textContent = s.slogan || "";
+      document.getElementById("hero-short-intro").textContent = s.short_intro || "";
+      document.getElementById("hero-feature-image").src = s.group_image_url || "https://placehold.co/800x600/B9D6E9/681C27?text=Tap+The+Nhom";
+
+      // Danh sách 11 thành viên trên Trang chủ: 4 + 4 + 3 căn giữa, KHUNG HÌNH TRẢI NGANG (4:3 & 16:10 xen kẽ)
+      const homeGrid = document.getElementById("home-members-grid");
+      homeGrid.innerHTML = members.map((m, idx) => {
+        // Xen kẽ nhẹ giữa khung ngang 4:3 và khung ngang 16:10 tạo nhịp điệu tạp chí nghệ thuật
+        const isWideAccent = (idx % 2 === 1);
+        const landscapeAspect = isWideAccent ? "aspect-[16/10]" : "aspect-[4/3]";
+        const cardTilt = isWideAccent ? "lg:mt-3" : "";
+        const avatar = m.avatar_url || "https://placehold.co/800x600/B9D6E9/681C27?text=Chua+Co+Anh";
+
+        return `
+          <article onclick="navigateTo('profile', ${m.id})" class="member-slot group cursor-pointer reveal-on-scroll ${cardTilt}">
+            <div class="editorial-photo-frame rounded-2xl p-2.5">
+              <div class="relative overflow-hidden rounded-xl bg-pastelBlue/35 ${landscapeAspect}">
+                <img src="${avatar}" alt="${escapeHtml(m.full_name)}" loading="lazy"
+                     onerror="this.src='https://placehold.co/800x600/B9D6E9/681C27?text=Anh+Thanh+Vien'"
+                     class="w-full h-full object-cover img-zoom protected-photo" oncontextmenu="return false;" />
+                <div class="absolute top-2 left-2 px-2.5 py-0.5 rounded-full bg-creamLight/95 border border-burgundy text-[10px] font-serif font-extrabold text-burgundy shadow-2xs">
+                  No.${String(idx + 1).padStart(2, "0")}
+                </div>
+              </div>
+              <div class="pt-3 pb-1 text-center">
+                <h3 class="font-serif text-base sm:text-lg font-bold text-burgundy group-hover:underline decoration-burgundy underline-offset-4">
+                  ${escapeHtml(m.full_name)}
+                </h3>
+              </div>
+            </div>
+          </article>
+        `;
+      }).join("");
+
+      // 2. Trang Giới Thiệu (About)
+      document.getElementById("about-class-label").textContent = s.class_name || "";
+      document.getElementById("about-group-title").textContent = `Về ${s.group_name || "Chúng Tôi"}`;
+      document.getElementById("about-photo-caption").textContent = s.group_name || "";
+      document.getElementById("about-group-image").src = s.group_image_url || "https://placehold.co/1200x675/B9D6E9/681C27?text=Hinh+Anh+Tap+The";
+      document.getElementById("about-full-content").textContent = s.full_about || "";
+      document.getElementById("about-shared-message").textContent = s.shared_message || "";
+
+      // 3. Trang Danh Sách Thành Viên (Members) - Khung hình trải ngang đồng bộ
+      const allGrid = document.getElementById("all-members-grid");
+      allGrid.innerHTML = members.map((m, idx) => {
+        const avatar = m.avatar_url || "https://placehold.co/800x600/B9D6E9/681C27?text=Chua+Co+Anh";
+        return `
+          <article onclick="navigateTo('profile', ${m.id})" class="group cursor-pointer editorial-photo-frame rounded-2xl p-2.5">
+            <div class="relative overflow-hidden rounded-xl aspect-[4/3] bg-pastelBlue/35">
+              <img src="${avatar}" alt="${escapeHtml(m.full_name)}" loading="lazy"
+                   onerror="this.src='https://placehold.co/800x600/B9D6E9/681C27?text=Anh+Thanh+Vien'"
+                   class="w-full h-full object-cover img-zoom protected-photo" oncontextmenu="return false;" />
+              <div class="absolute top-2 left-2 px-2.5 py-0.5 rounded-full bg-creamLight/95 border border-burgundy text-[10px] font-serif font-extrabold text-burgundy">
+                No.${String(idx + 1).padStart(2, "0")}
+              </div>
+            </div>
+            <div class="pt-3 pb-1 text-center">
+              <h3 class="font-serif text-lg font-bold text-burgundy">${escapeHtml(m.full_name)}</h3>
+            </div>
+          </article>
+        `;
+      }).join("");
+
+      // 4. Trang Liên Hệ (Contact)
+      document.getElementById("contact-message-text").textContent = s.contact_message || "";
+      const contactDetailsBox = document.getElementById("contact-details-box");
+      let contactItemsHtml = "";
+      if (s.contact_email) {
+        contactItemsHtml += `
+          <div class="p-4 rounded-2xl bg-pastelBlue/35 border border-burgundy/30 text-left">
+            <div class="text-[11px] uppercase tracking-wider text-burgundy font-bold">Email Liên Hệ</div>
+            <a href="mailto:${escapeHtml(s.contact_email)}" class="text-sm font-semibold text-burgundy hover:underline break-all">${escapeHtml(s.contact_email)}</a>
+          </div>
+        `;
+      }
+      if (s.contact_phone) {
+        contactItemsHtml += `
+          <div class="p-4 rounded-2xl bg-pastelBlue/35 border border-burgundy/30 text-left">
+            <div class="text-[11px] uppercase tracking-wider text-burgundy font-bold">Điện Thoại / Zalo</div>
+            <div class="text-sm font-semibold text-burgundy">${escapeHtml(s.contact_phone)}</div>
+          </div>
+        `;
+      }
+      contactDetailsBox.innerHTML = contactItemsHtml;
+      contactDetailsBox.classList.toggle("hidden", !contactItemsHtml);
+
+      const contactSocialsBox = document.getElementById("contact-socials-box");
+      let groupSocialsHtml = "";
+      if (s.social_facebook) {
+        groupSocialsHtml += `<a href="${escapeHtml(s.social_facebook)}" target="_blank" rel="noopener noreferrer" class="inline-flex items-center gap-2 px-5 py-2.5 rounded-full bg-burgundy text-creamLight text-xs font-bold hover:opacity-90 transition"><i class="fa-brands fa-facebook-f"></i> Facebook</a>`;
+      }
+      if (s.social_instagram) {
+        groupSocialsHtml += `<a href="${escapeHtml(s.social_instagram)}" target="_blank" rel="noopener noreferrer" class="inline-flex items-center gap-2 px-5 py-2.5 rounded-full bg-burgundy text-creamLight text-xs font-bold hover:opacity-90 transition"><i class="fa-brands fa-instagram"></i> Instagram</a>`;
+      }
+      if (s.social_tiktok) {
+        groupSocialsHtml += `<a href="${escapeHtml(s.social_tiktok)}" target="_blank" rel="noopener noreferrer" class="inline-flex items-center gap-2 px-5 py-2.5 rounded-full bg-burgundy text-creamLight text-xs font-bold hover:opacity-90 transition"><i class="fa-brands fa-tiktok"></i> TikTok</a>`;
+      }
+      if (groupSocialsHtml) {
+        contactSocialsBox.classList.remove("hidden");
+        contactSocialsBox.innerHTML = `<div class="text-xs uppercase tracking-[0.2em] text-burgundy font-bold mb-4">Kênh Truyền Thông Chung</div><div class="flex flex-wrap justify-center gap-3">${groupSocialsHtml}</div>`;
+      } else {
+        contactSocialsBox.classList.add("hidden");
+      }
+
+      if (currentMemberId !== null) {
+        renderMemberProfile(currentMemberId);
+      }
+
+      triggerRevealElements();
+    }
+
+    /**
+     * =========================================================================
+     * TRANG HỒ SƠ CÁ NHÂN - BỐ CỤC GIỐNG MỤC "ABOUT ME" TRONG ẢNH THAM CHIẾU
+     * =========================================================================
+     */
+    function renderMemberProfile(memberId) {
+      const data = getActiveData();
+      const members = [...data.members].sort((a, b) => (a.order_index || 0) - (b.order_index || 0));
+      const index = members.findIndex(m => Number(m.id) === Number(memberId));
+      const wrapper = document.getElementById("profile-content-wrapper");
+
+      if (index === -1) {
+        wrapper.innerHTML = `<div class="text-center py-16"><h2 class="font-serif text-2xl text-burgundy">Không tìm thấy hồ sơ thành viên này.</h2></div>`;
+        return;
+      }
+
+      const m = members[index];
+      const prevMember = index > 0 ? members[index - 1] : members[members.length - 1];
+      const nextMember = index < members.length - 1 ? members[index + 1] : members[0];
+
+      // Biểu tượng mạng xã hội (Chỉ hiển thị khi có đường dẫn tương ứng)
+      const socials = [];
+      if (m.facebook && m.facebook.trim()) {
+        socials.push(`<a href="${escapeHtml(m.facebook)}" target="_blank" rel="noopener noreferrer" aria-label="Facebook" class="w-10 h-10 rounded-full bg-burgundy text-creamLight flex items-center justify-center hover:scale-110 hover:bg-pastelBlue hover:text-burgundy border border-burgundy transition"><i class="fa-brands fa-facebook-f"></i></a>`);
+      }
+      if (m.instagram && m.instagram.trim()) {
+        socials.push(`<a href="${escapeHtml(m.instagram)}" target="_blank" rel="noopener noreferrer" aria-label="Instagram" class="w-10 h-10 rounded-full bg-burgundy text-creamLight flex items-center justify-center hover:scale-110 hover:bg-pastelBlue hover:text-burgundy border border-burgundy transition"><i class="fa-brands fa-instagram"></i></a>`);
+      }
+      if (m.zalo && m.zalo.trim()) {
+        socials.push(`<a href="${escapeHtml(m.zalo)}" target="_blank" rel="noopener noreferrer" aria-label="Zalo" class="px-3.5 h-10 rounded-full bg-burgundy text-creamLight text-xs font-extrabold flex items-center justify-center hover:scale-110 hover:bg-pastelBlue hover:text-burgundy border border-burgundy transition">Zalo</a>`);
+      }
+      if (m.tiktok && m.tiktok.trim()) {
+        socials.push(`<a href="${escapeHtml(m.tiktok)}" target="_blank" rel="noopener noreferrer" aria-label="TikTok" class="w-10 h-10 rounded-full bg-burgundy text-creamLight flex items-center justify-center hover:scale-110 hover:bg-pastelBlue hover:text-burgundy border border-burgundy transition"><i class="fa-brands fa-tiktok"></i></a>`);
+      }
+
+      // Sở thích
+      const hobbyItems = [];
+      if (m.fav_food) hobbyItems.push(`<div class="flex items-start gap-2"><span class="text-burgundy font-bold">✦</span><span><strong class="text-burgundy">Món ăn yêu thích:</strong> ${escapeHtml(m.fav_food)}</span></div>`);
+      if (m.fav_color) hobbyItems.push(`<div class="flex items-start gap-2"><span class="text-burgundy font-bold">✦</span><span><strong class="text-burgundy">Màu sắc yêu thích:</strong> ${escapeHtml(m.fav_color)}</span></div>`);
+      if (m.fav_music) hobbyItems.push(`<div class="flex items-start gap-2"><span class="text-burgundy font-bold">✦</span><span><strong class="text-burgundy">Thể loại nhạc:</strong> ${escapeHtml(m.fav_music)}</span></div>`);
+      if (m.hobbies) hobbyItems.push(`<div class="flex items-start gap-2"><span class="text-burgundy font-bold">✦</span><span><strong class="text-burgundy">Sở thích khác:</strong> ${escapeHtml(m.hobbies)}</span></div>`);
+
+      const validAlbums = Array.isArray(m.album_urls) ? m.album_urls.filter(u => u && u.trim()) : [];
+      lightboxImages = validAlbums;
+
+      const shortCallName = m.nickname ? m.nickname : m.full_name.split(" ").pop();
+
+      wrapper.innerHTML = `
+        <!-- Dải tiêu đề tạp chí phía trên -->
+        <div class="flex flex-wrap items-center justify-between gap-2 pb-4 mb-8 border-b-2 border-burgundy/20 text-xs uppercase tracking-[0.2em] text-burgundy font-bold">
+          <span>Hồ Sơ Thành Viên • Số ${String(index + 1).padStart(2, "0")} / ${String(members.length).padStart(2, "0")}</span>
+          <span>${escapeHtml(data.settings.group_name)}</span>
+        </div>
+
+        <!-- KHỐI 1: BỐ CỤC GIỐNG MỤC "ABOUT ME" TRONG ẢNH MẪU -->
+        <div class="bg-creamLight border-2 border-burgundy rounded-[2rem] p-6 sm:p-10 lg:p-12 shadow-[8px_8px_0px_#B9D6E9] relative mb-12">
+          <!-- Dấu ba chấm trang trí góc trên phải -->
+          <div class="hidden sm:flex items-center gap-1.5 absolute top-6 right-7 text-burgundy">
+            <span class="w-2 h-2 rounded-full bg-burgundy"></span>
+            <span class="w-2 h-2 rounded-full bg-burgundy"></span>
+            <span class="w-2 h-2 rounded-full bg-burgundy"></span>
+          </div>
+
+          <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-center">
+            <!-- Bên trái: Khung ảnh đóng khung viền chỉ mảnh + Sticker nhãn dán trên trái + Hoa thị retro dưới phải -->
+            <div class="lg:col-span-5">
+              ${m.avatar_url ? `
+                <div class="relative max-w-xs sm:max-w-sm mx-auto">
+                  <!-- Nhãn dán Sticker kiểu "About Me" -->
+                  <div class="editorial-sticker px-4 py-1 rounded-full text-xs sm:text-sm font-extrabold tracking-wide absolute -top-3.5 -left-2 z-10">
+                    Về Mình Nè!
+                  </div>
+
+                  <!-- Khung ảnh viền chỉ mảnh đậm chất tạp chí -->
+                  <div class="rounded-[1.6rem] border-2 border-burgundy bg-pastelBlue/30 p-2.5 shadow-[5px_5px_0px_#E7D5C3]">
+                    <div class="overflow-hidden rounded-[1.2rem] aspect-[3/4] bg-cream">
+                      <img src="${escapeHtml(m.avatar_url)}" alt="${escapeHtml(m.full_name)}"
+                           onerror="this.src='https://placehold.co/600x800/B9D6E9/681C27?text=Chan+Dung'"
+                           class="w-full h-full object-cover protected-photo" oncontextmenu="return false;" />
+                    </div>
+                  </div>
+
+                  <!-- Biểu tượng hoa thị retro ở góc dưới bên phải khung ảnh -->
+                  <div class="absolute -bottom-4 -right-3 w-12 h-12 rounded-full bg-creamLight border-2 border-burgundy flex items-center justify-center text-burgundy shadow-sm">
+                    <svg class="w-7 h-7" viewBox="0 0 24 24" fill="currentColor">
+                      <path d="M12 1L13.8 8.8L20.5 4.5L16.2 11.2L24 13L16.2 14.8L20.5 21.5L13.8 17.2L12 25L10.2 17.2L3.5 21.5L7.8 14.8L0 13L7.8 11.2L3.5 4.5L10.2 8.8L12 1Z"/>
+                    </svg>
+                  </div>
+                </div>
+              ` : ""}
+            </div>
+
+            <!-- Bên phải: Lời chào chữ viết tay nghệ thuật + Thông tin cơ bản + Chữ ký -->
+            <div class="lg:col-span-7 space-y-5 text-center lg:text-left">
+              <div class="font-script text-3xl sm:text-5xl text-burgundy leading-tight">
+                Xin chào, mình là ${escapeHtml(shortCallName)}!
+              </div>
+
+              <div>
+                <h1 class="font-serif text-2xl sm:text-3xl font-extrabold text-burgundy uppercase tracking-tight">
+                  ${escapeHtml(m.full_name)}
+                </h1>
+                ${m.nickname ? `<p class="text-xs sm:text-sm font-semibold text-burgundy/75 mt-1">Biệt danh thân mật: “${escapeHtml(m.nickname)}”</p>` : ""}
+              </div>
+
+              <!-- Ngày sinh & Cung hoàng đạo -->
+              ${(m.birthdate || m.zodiac) ? `
+                <div class="flex flex-wrap items-center justify-center lg:justify-start gap-3 pt-1">
+                  ${m.birthdate ? `
+                    <span class="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-pastelBlue/55 border border-burgundy/25 text-xs font-bold text-burgundy">
+                      <i class="fa-regular fa-calendar"></i> Ngày sinh: ${escapeHtml(m.birthdate)}
+                    </span>
+                  ` : ""}
+                  ${m.zodiac ? `
+                    <span class="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-beige/65 border border-burgundy/25 text-xs font-bold text-burgundy">
+                      <i class="fa-solid fa-star"></i> Cung ${escapeHtml(m.zodiac)}
+                    </span>
+                  ` : ""}
+                </div>
+              ` : ""}
+
+              <!-- Ước mơ & Mục tiêu nổi bật -->
+              ${m.dreams ? `
+                <p class="text-sm sm:text-base text-ink/85 leading-relaxed pt-1">
+                  <strong class="text-burgundy">Ước mơ & Mục tiêu:</strong> ${escapeHtml(m.dreams)}
+                </p>
+              ` : ""}
+
+              <!-- Hàng chữ ký nghệ thuật & Mạng xã hội bên dưới giống ảnh mẫu -->
+              <div class="pt-4 border-t border-beige flex flex-col sm:flex-row items-center justify-between gap-4">
+                ${socials.length > 0 ? `
+                  <div class="flex items-center gap-2.5">
+                    ${socials.join("")}
+                  </div>
+                ` : `<div></div>`}
+
+                <div class="text-center sm:text-right">
+                  <div class="font-script text-2xl sm:text-3xl text-burgundy">${escapeHtml(shortCallName)}</div>
+                  <div class="text-[10px] uppercase tracking-[0.22em] font-extrabold text-burgundy/80">
+                    ${escapeHtml(data.settings.group_name)}
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- KHỐI 2: CÁC CHUYÊN MỤC EDITORIAL (SỞ THÍCH, GIA ĐÌNH, FUN FACTS) -->
+        <div class="grid grid-cols-1 md:grid-cols-12 gap-7 items-start">
+          ${hobbyItems.length > 0 ? `
+            <div class="md:col-span-7 pattern-stripes border-2 border-burgundy/75 rounded-3xl p-4 sm:p-5">
+              <div class="bg-creamLight border border-burgundy/30 rounded-2xl p-6 space-y-3">
+                <div class="flex items-center gap-2">
+                  <span class="editorial-sticker px-3 py-0.5 rounded-full text-[11px] font-bold uppercase">Sở Thích</span>
+                  <h2 class="font-serif text-xl sm:text-2xl font-bold text-burgundy">Góc Yêu Thích Cá Nhân</h2>
+                </div>
+                <div class="space-y-2.5 text-sm sm:text-base text-ink/85 pt-1">
+                  ${hobbyItems.join("")}
+                </div>
+              </div>
+            </div>
+          ` : ""}
+
+          <div class="${hobbyItems.length > 0 ? "md:col-span-5" : "md:col-span-12"} space-y-6">
+            <!-- Fun Facts (Tự động ẩn nếu trống) -->
+            ${m.fun_facts ? `
+              <div class="bg-pastelBlue/35 border-2 border-burgundy/75 rounded-3xl p-6 relative">
+                <div class="flex items-center justify-between mb-2">
+                  <span class="text-[11px] uppercase tracking-[0.2em] font-extrabold text-burgundy">★ Fun Facts</span>
+                  <svg class="w-5 h-5 text-burgundy" viewBox="0 0 24 24" fill="currentColor"><path d="M12 1L13.8 8.8L20.5 4.5L16.2 11.2L24 13L16.2 14.8L20.5 21.5L13.8 17.2L12 25L10.2 17.2L3.5 21.5L7.8 14.8L0 13L7.8 11.2L3.5 4.5L10.2 8.8L12 1Z"/></svg>
+                </div>
+                <h3 class="font-serif text-xl font-bold text-burgundy mb-2">Những Điều Thú Vị Về Tôi</h3>
+                <p class="text-sm sm:text-base text-ink/85 leading-relaxed">${escapeHtml(m.fun_facts)}</p>
+              </div>
+            ` : ""}
+
+            <!-- Gia đình (Tự động ẩn nếu trống) -->
+            ${m.family_info ? `
+              <div class="bg-creamLight border-2 border-beige rounded-3xl p-6">
+                <h3 class="font-serif text-xl font-bold text-burgundy mb-2">Gia Đình & Điểm Tựa</h3>
+                <p class="text-sm sm:text-base text-ink/85 leading-relaxed">${escapeHtml(m.family_info)}</p>
+              </div>
+            ` : ""}
+          </div>
+        </div>
+
+        <!-- KHỐI 3: ALBUM ẢNH (KHUNG HÌNH TRẢI NGANG + LIGHTBOX PHÓNG TO) -->
+        ${validAlbums.length > 0 ? `
+          <div class="mt-12 pt-10 border-t-2 border-beige">
+            <div class="flex flex-wrap items-center justify-between gap-2 mb-6">
+              <div class="flex items-center gap-2.5">
+                <svg class="w-6 h-6 text-burgundy" viewBox="0 0 24 24" fill="currentColor"><path d="M12 1L13.8 8.8L20.5 4.5L16.2 11.2L24 13L16.2 14.8L20.5 21.5L13.8 17.2L12 25L10.2 17.2L3.5 21.5L7.8 14.8L0 13L7.8 11.2L3.5 4.5L10.2 8.8L12 1Z"/></svg>
+                <h2 class="font-serif text-2xl sm:text-3xl font-extrabold text-burgundy uppercase">Album Kỷ Niệm</h2>
+              </div>
+              <span class="text-xs font-semibold text-burgundy/75">Nhấn vào từng ảnh để xem kích thước lớn</span>
+            </div>
+
+            <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-5">
+              ${validAlbums.map((url, imgIdx) => `
+                <div onclick="openLightbox(${imgIdx})" class="group cursor-pointer editorial-photo-frame rounded-2xl p-2">
+                  <div class="overflow-hidden rounded-xl aspect-[4/3] bg-pastelBlue/25 relative">
+                    <img src="${escapeHtml(url)}" alt="Ảnh kỷ niệm ${imgIdx + 1}" loading="lazy"
+                         onerror="this.src='https://placehold.co/600x450/E7D5C3/681C27?text=Khoanh+Khac'"
+                         class="w-full h-full object-cover img-zoom protected-photo" oncontextmenu="return false;" />
+                    <div class="absolute bottom-2 right-2 w-8 h-8 rounded-full bg-creamLight/90 border border-burgundy text-burgundy flex items-center justify-center text-xs opacity-0 group-hover:opacity-100 transition">
+                      <i class="fa-solid fa-expand"></i>
+                    </div>
+                  </div>
+                </div>
+              `).join("")}
+            </div>
+          </div>
+        ` : ""}
+
+        <!-- ĐIỀU HƯỚNG CUỐI TRANG HỒ SƠ -->
+        <div class="mt-14 pt-8 border-t-2 border-beige flex flex-col sm:flex-row items-center justify-between gap-4">
+          <button onclick="navigateTo('profile', ${prevMember.id})" class="w-full sm:w-auto px-5 py-3 rounded-full border-2 border-burgundy/30 bg-creamLight hover:bg-pastelBlue/55 text-burgundy text-xs font-bold tracking-wider uppercase transition cursor-pointer flex items-center justify-center gap-2">
+            <i class="fa-solid fa-arrow-left"></i>
+            <span>THÀNH VIÊN TRƯỚC: ${escapeHtml(prevMember.full_name)}</span>
+          </button>
+
+          <button onclick="navigateTo('members')" class="w-full sm:w-auto px-6 py-3 rounded-full bg-burgundy text-creamLight text-xs font-bold tracking-wider uppercase hover:opacity-90 transition cursor-pointer shadow-xs">
+            QUAY LẠI DANH SÁCH THÀNH VIÊN
+          </button>
+
+          <button onclick="navigateTo('profile', ${nextMember.id})" class="w-full sm:w-auto px-5 py-3 rounded-full border-2 border-burgundy/30 bg-creamLight hover:bg-pastelBlue/55 text-burgundy text-xs font-bold tracking-wider uppercase transition cursor-pointer flex items-center justify-center gap-2">
+            <span>THÀNH VIÊN TIẾP THEO: ${escapeHtml(nextMember.full_name)}</span>
+            <i class="fa-solid fa-arrow-right"></i>
+          </button>
+        </div>
+      `;
+    }
+
+    /**
+     * =========================================================================
+     * LIGHTBOX XEM ẢNH LỚN ALBUM
+     * =========================================================================
+     */
+    function openLightbox(index) {
+      if (!lightboxImages || lightboxImages.length === 0) return;
+      lightboxIndex = index;
+      updateLightboxDisplay();
+      document.getElementById("album-lightbox").classList.remove("hidden");
+    }
+
+    function closeLightbox() {
+      document.getElementById("album-lightbox").classList.add("hidden");
+    }
+
+    function closeLightboxOnBackdrop(e) {
+      if (e.target.id === "album-lightbox") closeLightbox();
+    }
+
+    function changeLightboxSlide(step) {
+      if (!lightboxImages || lightboxImages.length === 0) return;
+      lightboxIndex = (lightboxIndex + step + lightboxImages.length) % lightboxImages.length;
+      updateLightboxDisplay();
+    }
+
+    function updateLightboxDisplay() {
+      document.getElementById("lightbox-main-img").src = lightboxImages[lightboxIndex];
+      document.getElementById("lightbox-counter").textContent = `${lightboxIndex + 1} / ${lightboxImages.length}`;
+    }
+
+    /**
+     * =========================================================================
+     * KHU VỰC QUẢN TRỊ (ADMIN), XEM TRƯỚC (PREVIEW) & LƯU DỮ LIỆU
+     * =========================================================================
+     */
+    async function handleAdminLogin(e) {
+      e.preventDefault();
+      const email = document.getElementById("login-email").value.trim();
+      const password = document.getElementById("login-password").value;
+      const sbUrl = document.getElementById("cfg-supabase-url").value.trim();
+      const sbKey = document.getElementById("cfg-supabase-key").value.trim();
+
+      if (!email || !password) {
+        showToast("Thiếu thông tin bắt buộc: Vui lòng nhập email và mật khẩu.", "error");
+        return;
+      }
+
+      if (sbUrl && sbKey && window.supabase) {
+        try {
+          supabaseClient = window.supabase.createClient(sbUrl, sbKey);
+          const { error } = await supabaseClient.auth.signInWithPassword({ email, password });
+          if (error) {
+            showToast("Đăng nhập Supabase thất bại: " + error.message, "error");
+            return;
+          }
+          localStorage.setItem(STORAGE_KEY_SB, JSON.stringify({ url: sbUrl, key: sbKey }));
+          isAdminLoggedIn = true;
+          sessionStorage.setItem(STORAGE_KEY_AUTH, "true");
+          await loadInitialData();
+          renderEntireSite();
+          updateAdminUIState();
+          showToast("Đăng nhập Supabase thành công!", "success");
+          return;
+        } catch (err) {
+          showToast("Lỗi kết nối Supabase: " + err.message, "error");
+          return;
+        }
+      }
+
+      if (email === "admin@tapchi.vn" && password === "123456") {
+        isAdminLoggedIn = true;
+        sessionStorage.setItem(STORAGE_KEY_AUTH, "true");
+        updateAdminUIState();
+        showToast("Đăng nhập quản trị thành công!", "success");
+      } else {
+        showToast("Email hoặc mật khẩu quản trị chưa chính xác.", "error");
+      }
+    }
+
+    async function handleAdminLogout() {
+      if (supabaseClient) await supabaseClient.auth.signOut();
+      isAdminLoggedIn = false;
+      isPreviewMode = false;
+      sessionStorage.removeItem(STORAGE_KEY_AUTH);
+      document.getElementById("preview-banner").classList.add("hidden");
+      updateAdminUIState();
+      renderEntireSite();
+      showToast("Đã đăng xuất khỏi khu vực quản trị.", "info");
+    }
+
+    function updateAdminUIState() {
+      const loginBox = document.getElementById("admin-login-box");
+      const dashBox = document.getElementById("admin-dashboard-box");
+
+      if (isAdminLoggedIn) {
+        loginBox.classList.add("hidden");
+        dashBox.classList.remove("hidden");
+        document.getElementById("storage-mode-badge").textContent = supabaseClient
+          ? "Chế độ: Đồng bộ Supabase Online"
+          : "Chế độ: Lưu Trực Tuyến Cục Bộ";
+        populateAdminFormsFromDraft();
+      } else {
+        loginBox.classList.remove("hidden");
+        dashBox.classList.add("hidden");
+      }
+    }
+
+    function switchAdminTab(tab) {
+      const tabMembers = document.getElementById("admin-tab-members");
+      const tabSite = document.getElementById("admin-tab-site");
+      const btnMembers = document.getElementById("tab-btn-members");
+      const btnSite = document.getElementById("tab-btn-site");
+
+      if (tab === "members") {
+        tabMembers.classList.remove("hidden");
+        tabSite.classList.add("hidden");
+        btnMembers.className = "px-5 py-2.5 rounded-full bg-burgundy text-creamLight text-xs font-bold tracking-wider uppercase transition cursor-pointer";
+        btnSite.className = "px-5 py-2.5 rounded-full bg-pastelBlue/50 text-burgundy border border-burgundy/20 text-xs font-bold tracking-wider uppercase hover:bg-pastelBlue transition cursor-pointer";
+      } else {
+        tabMembers.classList.add("hidden");
+        tabSite.classList.remove("hidden");
+        btnSite.className = "px-5 py-2.5 rounded-full bg-burgundy text-creamLight text-xs font-bold tracking-wider uppercase transition cursor-pointer";
+        btnMembers.className = "px-5 py-2.5 rounded-full bg-pastelBlue/50 text-burgundy border border-burgundy/20 text-xs font-bold tracking-wider uppercase hover:bg-pastelBlue transition cursor-pointer";
+      }
+    }
+
+    function populateAdminFormsFromDraft() {
+      const s = draftData.settings;
+      document.getElementById("draft-group-name").value = s.group_name || "";
+      document.getElementById("draft-class-name").value = s.class_name || "";
+      document.getElementById("draft-slogan").value = s.slogan || "";
+      document.getElementById("draft-short-intro").value = s.short_intro || "";
+      document.getElementById("draft-group-image").value = s.group_image_url || "";
+      document.getElementById("draft-full-about").value = s.full_about || "";
+      document.getElementById("draft-shared-message").value = s.shared_message || "";
+      document.getElementById("draft-contact-message").value = s.contact_message || "";
+      document.getElementById("draft-contact-email").value = s.contact_email || "";
+      document.getElementById("draft-contact-phone").value = s.contact_phone || "";
+      document.getElementById("draft-social-fb").value = s.social_facebook || "";
+      document.getElementById("draft-social-ig").value = s.social_instagram || "";
+      document.getElementById("draft-social-tiktok").value = s.social_tiktok || "";
+      renderAdminMembersTable();
+    }
+
+    function syncSiteDraftFromInputs() {
+      draftData.settings = {
+        ...draftData.settings,
+        group_name: document.getElementById("draft-group-name").value,
+        class_name: document.getElementById("draft-class-name").value,
+        slogan: document.getElementById("draft-slogan").value,
+        short_intro: document.getElementById("draft-short-intro").value,
+        group_image_url: document.getElementById("draft-group-image").value,
+        full_about: document.getElementById("draft-full-about").value,
+        shared_message: document.getElementById("draft-shared-message").value,
+        contact_message: document.getElementById("draft-contact-message").value,
+        contact_email: document.getElementById("draft-contact-email").value,
+        contact_phone: document.getElementById("draft-contact-phone").value,
+        social_facebook: document.getElementById("draft-social-fb").value,
+        social_instagram: document.getElementById("draft-social-ig").value,
+        social_tiktok: document.getElementById("draft-social-tiktok").value
+      };
+    }
+
+    function renderAdminMembersTable() {
+      const sorted = [...draftData.members].sort((a, b) => (a.order_index || 0) - (b.order_index || 0));
+      document.getElementById("admin-member-count").textContent = sorted.length;
+
+      const tbody = document.getElementById("admin-members-table-body");
+      tbody.innerHTML = sorted.map((m) => `
+        <tr class="hover:bg-pastelBlue/15 transition">
+          <td class="py-3 px-4 font-serif font-extrabold text-burgundy">#${m.order_index}</td>
+          <td class="py-3 px-4">
+            <img src="${escapeHtml(m.avatar_url || 'https://placehold.co/120x90/B9D6E9/681C27?text=Anh')}" alt="${escapeHtml(m.full_name)}" class="w-14 h-10 rounded-lg object-cover border border-burgundy/40" />
+          </td>
+          <td class="py-3 px-4">
+            <div class="font-bold text-ink">${escapeHtml(m.full_name)}</div>
+            <div class="text-xs text-ink/60">${m.nickname ? `“${escapeHtml(m.nickname)}”` : "Chưa có biệt danh"}</div>
+          </td>
+          <td class="py-3 px-4 hidden sm:table-cell text-xs text-ink/75">
+            ${escapeHtml(m.birthdate || "—")} ${m.zodiac ? `• ${escapeHtml(m.zodiac)}` : ""}
+          </td>
+          <td class="py-3 px-4 text-right space-x-1.5">
+            <button onclick="openMemberEditorModal(${m.id})" class="px-3.5 py-1.5 rounded-full bg-pastelBlue/65 hover:bg-pastelBlue text-burgundy text-xs font-bold transition cursor-pointer">
+              <i class="fa-solid fa-pen mr-1"></i> Sửa
+            </button>
+            <button onclick="deleteMemberFromDraft(${m.id})" class="px-3 py-1.5 rounded-full bg-burgundy/10 hover:bg-burgundy hover:text-creamLight text-burgundy text-xs font-bold transition cursor-pointer">
+              <i class="fa-solid fa-trash"></i>
+            </button>
+          </td>
+        </tr>
+      `).join("");
+    }
+
+    function openMemberEditorModal(memberId) {
+      const modal = document.getElementById("member-editor-modal");
+      const titleEl = document.getElementById("editor-modal-title");
+
+      if (memberId === null) {
+        titleEl.textContent = "Thêm Thành Viên Mới";
+        document.getElementById("edit-m-id").value = "";
+        document.getElementById("edit-m-order").value = draftData.members.length + 1;
+        document.getElementById("edit-m-name").value = "";
+        document.getElementById("edit-m-nickname").value = "";
+        document.getElementById("edit-m-birthdate").value = "";
+        document.getElementById("edit-m-zodiac").value = "";
+        document.getElementById("edit-m-avatar").value = "";
+        document.getElementById("edit-m-food").value = "";
+        document.getElementById("edit-m-color").value = "";
+        document.getElementById("edit-m-music").value = "";
+        document.getElementById("edit-m-hobbies").value = "";
+        document.getElementById("edit-m-dreams").value = "";
+        document.getElementById("edit-m-family").value = "";
+        document.getElementById("edit-m-facts").value = "";
+        document.getElementById("edit-m-fb").value = "";
+        document.getElementById("edit-m-ig").value = "";
+        document.getElementById("edit-m-zalo").value = "";
+        document.getElementById("edit-m-tiktok").value = "";
+        modalAlbumUrls = [];
+      } else {
+        const m = draftData.members.find(item => Number(item.id) === Number(memberId));
+        if (!m) return;
+        titleEl.textContent = `Chỉnh Sửa: ${m.full_name}`;
+        document.getElementById("edit-m-id").value = m.id;
+        document.getElementById("edit-m-order").value = m.order_index || 1;
+        document.getElementById("edit-m-name").value = m.full_name || "";
+        document.getElementById("edit-m-nickname").value = m.nickname || "";
+        document.getElementById("edit-m-birthdate").value = m.birthdate || "";
+        document.getElementById("edit-m-zodiac").value = m.zodiac || "";
+        document.getElementById("edit-m-avatar").value = m.avatar_url || "";
+        document.getElementById("edit-m-food").value = m.fav_food || "";
+        document.getElementById("edit-m-color").value = m.fav_color || "";
+        document.getElementById("edit-m-music").value = m.fav_music || "";
+        document.getElementById("edit-m-hobbies").value = m.hobbies || "";
+        document.getElementById("edit-m-dreams").value = m.dreams || "";
+        document.getElementById("edit-m-family").value = m.family_info || "";
+        document.getElementById("edit-m-facts").value = m.fun_facts || "";
+        document.getElementById("edit-m-fb").value = m.facebook || "";
+        document.getElementById("edit-m-ig").value = m.instagram || "";
+        document.getElementById("edit-m-zalo").value = m.zalo || "";
+        document.getElementById("edit-m-tiktok").value = m.tiktok || "";
+        modalAlbumUrls = Array.isArray(m.album_urls) ? [...m.album_urls] : [];
+      }
+
+      renderModalAlbumThumbnails();
+      modal.classList.remove("hidden");
+    }
+
+    function closeMemberEditorModal() {
+      document.getElementById("member-editor-modal").classList.add("hidden");
+    }
+
+    function renderModalAlbumThumbnails() {
+      const container = document.getElementById("edit-album-preview-list");
+      if (modalAlbumUrls.length === 0) {
+        container.innerHTML = `<div class="col-span-full text-xs text-ink/55 italic py-2">Chưa có ảnh nào trong album cá nhân.</div>`;
+        return;
+      }
+      container.innerHTML = modalAlbumUrls.map((url, idx) => `
+        <div class="relative rounded-xl overflow-hidden border border-burgundy/40 aspect-[4/3] bg-white">
+          <img src="${escapeHtml(url)}" class="w-full h-full object-cover" />
+          <button type="button" onclick="removeAlbumPhoto(${idx})" class="absolute top-1 right-1 w-6 h-6 rounded-full bg-burgundy text-creamLight text-[10px] flex items-center justify-center shadow cursor-pointer">
+            <i class="fa-solid fa-xmark"></i>
+          </button>
+        </div>
+      `).join("");
+    }
+
+    function addAlbumUrlManual() {
+      const input = document.getElementById("new-album-url-input");
+      const val = input.value.trim();
+      if (!val) return;
+      modalAlbumUrls.push(val);
+      input.value = "";
+      renderModalAlbumThumbnails();
+    }
+
+    function removeAlbumPhoto(idx) {
+      modalAlbumUrls.splice(idx, 1);
+      renderModalAlbumThumbnails();
+    }
+
+    function applyMemberModalToDraft(e) {
+      e.preventDefault();
+      const name = document.getElementById("edit-m-name").value.trim();
+      if (!name) {
+        showToast("Thiếu thông tin bắt buộc: Vui lòng nhập Họ và tên thành viên.", "error");
+        return;
+      }
+
+      const idVal = document.getElementById("edit-m-id").value;
+      const memberPayload = {
+        id: idVal ? Number(idVal) : Date.now(),
+        order_index: parseInt(document.getElementById("edit-m-order").value, 10) || 1,
+        full_name: name,
+        nickname: document.getElementById("edit-m-nickname").value.trim(),
+        birthdate: document.getElementById("edit-m-birthdate").value.trim(),
+        zodiac: document.getElementById("edit-m-zodiac").value.trim(),
+        avatar_url: document.getElementById("edit-m-avatar").value.trim(),
+        fav_food: document.getElementById("edit-m-food").value.trim(),
+        fav_color: document.getElementById("edit-m-color").value.trim(),
+        fav_music: document.getElementById("edit-m-music").value.trim(),
+        hobbies: document.getElementById("edit-m-hobbies").value.trim(),
+        dreams: document.getElementById("edit-m-dreams").value.trim(),
+        family_info: document.getElementById("edit-m-family").value.trim(),
+        fun_facts: document.getElementById("edit-m-facts").value.trim(),
+        facebook: document.getElementById("edit-m-fb").value.trim(),
+        instagram: document.getElementById("edit-m-ig").value.trim(),
+        zalo: document.getElementById("edit-m-zalo").value.trim(),
+        tiktok: document.getElementById("edit-m-tiktok").value.trim(),
+        album_urls: [...modalAlbumUrls]
+      };
+
+      if (idVal) {
+        const idx = draftData.members.findIndex(m => Number(m.id) === Number(idVal));
+        if (idx !== -1) draftData.members[idx] = memberPayload;
+      } else {
+        draftData.members.push(memberPayload);
+      }
+
+      closeMemberEditorModal();
+      renderAdminMembersTable();
+      showToast("Đã cập nhật bản nháp. Nhấn XEM TRƯỚC hoặc LƯU CÔNG KHAI.", "info");
+    }
+
+    function deleteMemberFromDraft(memberId) {
+      draftData.members = draftData.members.filter(m => Number(m.id) !== Number(memberId));
+      renderAdminMembersTable();
+      showToast("Đã xóa thành viên khỏi bản nháp.", "info");
+    }
+
+    async function handleImageUpload(event, targetType) {
+      const files = Array.from(event.target.files || []);
+      if (files.length === 0) return;
+
+      showToast("Đang tải ảnh lên...", "info");
+
+      for (const file of files) {
+        if (!file.type.startsWith("image/")) {
+          showToast("Chỉ hỗ trợ định dạng tệp hình ảnh.", "error");
+          continue;
+        }
+        if (file.size > 5 * 1024 * 1024) {
+          showToast("Dung lượng ảnh tối đa 5MB.", "error");
+          continue;
+        }
+
+        try {
+          let finalUrl = "";
+
+          if (supabaseClient) {
+            const fileName = `${Date.now()}_${file.name.replace(/[^a-zA-Z0-9.]/g, "_")}`;
+            const { data, error } = await supabaseClient.storage.from("magazine-images").upload(fileName, file);
+            if (!error && data) {
+              const { data: pub } = supabaseClient.storage.from("magazine-images").getPublicUrl(fileName);
+              finalUrl = pub.publicUrl;
+            }
+          }
+
+          if (!finalUrl) {
+            finalUrl = await compressImageToDataUrl(file, 960, 0.84);
+          }
+
+          if (targetType === "group") {
+            document.getElementById("draft-group-image").value = finalUrl;
+            syncSiteDraftFromInputs();
+          } else if (targetType === "avatar") {
+            document.getElementById("edit-m-avatar").value = finalUrl;
+          } else if (targetType === "album") {
+            modalAlbumUrls.push(finalUrl);
+            renderModalAlbumThumbnails();
+          }
+
+          showToast("Ảnh tải lên thành công!", "success");
+        } catch (err) {
+          showToast("Tải ảnh thất bại: " + err.message, "error");
+        }
+      }
+      event.target.value = "";
+    }
+
+    function compressImageToDataUrl(file, maxWidth, quality) {
+      return new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onload = (e) => {
+          const img = new Image();
+          img.onload = () => {
+            const canvas = document.createElement("canvas");
+            let w = img.width;
+            let h = img.height;
+            if (w > maxWidth) {
+              h = Math.round((h * maxWidth) / w);
+              w = maxWidth;
+            }
+            canvas.width = w;
+            canvas.height = h;
+            const ctx = canvas.getContext("2d");
+            ctx.drawImage(img, 0, 0, w, h);
+            resolve(canvas.toDataURL("image/jpeg", quality));
+          };
+          img.onerror = reject;
+          img.src = e.target.result;
+        };
+        reader.onerror = reject;
+        reader.readAsDataURL(file);
+      });
+    }
+
+    /**
+     * Xem trước trước khi lưu (Preview Workflow)
+     */
+    function startPreviewMode() {
+      syncSiteDraftFromInputs();
+      isPreviewMode = true;
+      document.getElementById("preview-banner").classList.remove("hidden");
+      renderEntireSite();
+      navigateTo("home");
+      showToast("Đang ở chế độ Xem Trước giao diện thực tế.", "info");
+    }
+
+    function exitPreviewToAdmin() {
+      isPreviewMode = false;
+      document.getElementById("preview-banner").classList.add("hidden");
+      renderEntireSite();
+      navigateTo("admin");
+    }
+
+    function discardDraftChanges() {
+      draftData = JSON.parse(JSON.stringify(officialData));
+      isPreviewMode = false;
+      document.getElementById("preview-banner").classList.add("hidden");
+      populateAdminFormsFromDraft();
+      renderEntireSite();
+      showToast("Đã hủy các thay đổi chưa lưu.", "info");
+    }
+
+    async function commitPreviewChanges() {
+      await saveAllDataOfficial();
+      isPreviewMode = false;
+      document.getElementById("preview-banner").classList.add("hidden");
+      renderEntireSite();
+    }
+
+    async function saveAllDataOfficial() {
+      syncSiteDraftFromInputs();
+
+      if (!draftData.settings.group_name.trim() || !draftData.settings.class_name.trim()) {
+        showToast("Thiếu thông tin bắt buộc: Tên nhóm và Lớp không được để trống.", "error");
+        return;
+      }
+
+      if (supabaseClient) {
+        try {
+          const { error: setErr } = await supabaseClient.from("settings").upsert({
+            id: 1,
+            ...draftData.settings
+          });
+          if (setErr) throw setErr;
+
+          await supabaseClient.from("members").delete().neq("id", -1);
+          const cleanMembers = draftData.members.map(({ id, ...rest }) => rest);
+          if (cleanMembers.length > 0) {
+            const { data: inserted, error: insErr } = await supabaseClient.from("members").insert(cleanMembers).select();
+            if (insErr) throw insErr;
+            if (inserted) draftData.members = inserted;
+          }
+        } catch (err) {
+          showToast("Lưu thất bại trên Supabase: " + err.message, "error");
+          return;
+        }
+      }
+
+      try {
+        officialData = JSON.parse(JSON.stringify(draftData));
+        localStorage.setItem(STORAGE_KEY_DATA, JSON.stringify(officialData));
+        renderEntireSite();
+        populateAdminFormsFromDraft();
+        showToast("Đã lưu thành công! Dữ liệu đã được công khai.", "success");
+      } catch (err) {
+        showToast("Lưu thất bại: " + err.message, "error");
+      }
+    }
+
+    function showToast(message, type = "info") {
+      const container = document.getElementById("toast-container");
+      const toast = document.createElement("div");
+
+      let bgClass = "bg-burgundy text-creamLight border-pastelBlue";
+      let icon = "fa-circle-info";
+      if (type === "success") {
+        bgClass = "bg-burgundy text-creamLight border-pastelBlue";
+        icon = "fa-circle-check";
+      } else if (type === "error") {
+        bgClass = "bg-red-900 text-creamLight border-red-300";
+        icon = "fa-triangle-exclamation";
+      }
+
+      toast.className = `${bgClass} border-2 px-4 py-3 rounded-2xl shadow-xl text-xs sm:text-sm font-semibold flex items-center gap-2.5 transition-all duration-300 transform translate-y-2 opacity-0`;
+      toast.innerHTML = `<i class="fa-solid ${icon} text-pastelBlue"></i><span>${escapeHtml(message)}</span>`;
+      container.appendChild(toast);
+
+      requestAnimationFrame(() => {
+        toast.classList.remove("translate-y-2", "opacity-0");
+      });
+
+      setTimeout(() => {
+        toast.classList.add("opacity-0", "translate-y-2");
+        setTimeout(() => toast.remove(), 300);
+      }, 3400);
+    }
+
+    let scrollObserver = null;
+    function setupScrollObserver() {
+      scrollObserver = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+          if (entry.isIntersecting) {
+            entry.target.classList.add("revealed");
+            scrollObserver.unobserve(entry.target);
+          }
+        });
+      }, { threshold: 0.1 });
+      triggerRevealElements();
+    }
+
+    function triggerRevealElements() {
+      if (!scrollObserver) return;
+      document.querySelectorAll(".reveal-on-scroll:not(.revealed)").forEach(el => {
+        scrollObserver.observe(el);
+      });
+    }
+
+    function escapeHtml(str) {
+      if (str === null || str === undefined) return "";
+      return String(str)
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#039;");
+    }
+  </script>
+</body>
+</html>

@@ -1,0 +1,46 @@
+<!doctype html>
+<html lang="vi">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#fff8e9">
+  <meta name="description" content="Tạp chí điện tử giới thiệu Nhóm 11 thành viên lớp 12A.">
+  <title>Nhóm 11 thành viên — 12A</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700&family=Playfair+Display:wght@500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="./styles.css">
+</head>
+<body>
+  <div class="top-stripe" aria-hidden="true"></div>
+  <header class="site-header">
+    <a class="brand" href="#/" aria-label="Về trang chủ"><span class="brand-mark">11</span><span><b id="brand-name">NHÓM 11 THÀNH VIÊN</b><small id="brand-class">LỚP 12A · KỶ YẾU THANH XUÂN</small></span></a>
+    <button class="menu-toggle" id="menu-toggle" aria-label="Mở menu">☰</button>
+    <nav id="main-nav">
+      <a href="#/">TRANG CHỦ</a><a href="#/about">GIỚI THIỆU</a><a href="#/members">THÀNH VIÊN</a><a href="#/contact">LIÊN HỆ</a>
+    </nav>
+  </header>
+
+  <main id="app" class="page-shell" aria-live="polite">
+    <section class="loading-state"><span class="loader"></span><p>Đang mở cuốn tạp chí của chúng mình...</p></section>
+  </main>
+
+  <footer class="site-footer">
+    <span>© <span id="year"></span> · NHỮNG TRANG THANH XUÂN</span>
+    <span>ĐƯỢC VIẾT NÊN BỞI CHÚNG MÌNH</span>
+  </footer>
+
+  <div id="lightbox" class="lightbox" hidden>
+    <button class="lightbox-close" id="lightbox-close" aria-label="Đóng">×</button>
+    <button class="lightbox-arrow prev" id="lightbox-prev" aria-label="Ảnh trước">‹</button>
+    <img id="lightbox-image" alt="Ảnh trong album">
+    <button class="lightbox-arrow next" id="lightbox-next" aria-label="Ảnh tiếp theo">›</button>
+    <p id="lightbox-caption"></p>
+  </div>
+
+  <div id="toast" class="toast" role="status" aria-live="polite"></div>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="./config.js"></script>
+  <script src="./app.js"></script>
+</body>
+</html>
